@@ -1,77 +1,74 @@
-enum Operation {
-  NoOperation = 'noop',
-  LoadConstantZero = 'lconst_zero',
-  LoadConstantOne = 'lconst_one',
-  LoadConstantTwo = 'lconst_two',
-  IntegerAdd = 'int_add',
-};
+import { EveNull, EveInteger, VM, ixTable, Program, EveValue, InstructionArgument, Opcode, Instruction, VMResult, EveString } from "./types";
 
-export enum Opcode {
-  NOOP = 0xfe,
-  LCONST_ZERO = 0x00,
-  LCONST_ONE = 0x01,
-  LCONST_TWO = 0x02,
-  ADD = 0xa0,
-};
-
-type Instruction = Opcode;
-type Program = Instruction[];
-
-type InstructionTable = { [key in Opcode]: Operation } 
-const ixTable: InstructionTable = {
-  [Opcode.NOOP]: Operation.NoOperation,
-  [Opcode.LCONST_ZERO]: Operation.LoadConstantZero,
-  [Opcode.LCONST_ONE]: Operation.LoadConstantOne,
-  [Opcode.LCONST_TWO]: Operation.LoadConstantTwo,
-  [Opcode.ADD]: Operation.IntegerAdd,
-};
-
-type JSValue = number | null
-
-class EveNull { get js(): JSValue { return null }}
-const eveNull = new EveNull();
-
-class EveInteger {
-  constructor(private internalValue: number) {}
-  get js(): JSValue { return this.internalValue }
+function isNumeric(n: any) : n is number {
+    return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+function isString(s: any): s is string {
+  return typeof s === 'string' || s instanceof String
+}
+
+const eveNull = new EveNull();
 const eveZero = new EveInteger(0);
 const eveOne = new EveInteger(1);
 const eveTwo = new EveInteger(2);
 
-type EveValue = EveNull | EveInteger
-
-type VMResult = EveValue
-
-type VMMethod = () => VMResult
-type VM = { [key in Operation]: VMMethod }
-
 class EveVM implements VM {
   stack: EveValue[] = []
 
-  noop = (): VMResult => {
+  noop = () => {
     process.stdout.write('[VM] no-op')
     return eveNull 
   }
 
-  lconst_zero = (): VMResult => this.push(eveZero);
-  lconst_one = (): VMResult => this.push(eveOne);
-  lconst_two = (): VMResult => this.push(eveTwo);
+  load_const_zero = () => this.push(eveZero);
+  load_const_one = () => this.push(eveOne);
+  load_const_two = () => this.push(eveTwo);
 
-  int_add = (): VMResult => {
+  create_integer = (arg?: string | number) => {
+    if (isNumeric(arg)) {
+      let newInt = new EveInteger(arg);
+      this.push(newInt);
+      return newInt;
+    }
+    throw new Error("Int create error -- invalid arg: " + arg)
+  }
+
+  add_integers = () => {
     // throw new Error('VM.int_add not impl')
     let [top, second] = this.stack;
-    if (top.js !== null && second.js !== null) {
+    if (top instanceof EveInteger && second instanceof EveInteger) {
       let jsResult = top.js + second.js;
       let eveResult = new EveInteger(jsResult)
       this.push(eveResult);
       return eveResult;
     } else {
-      throw new Error("Integer Addition Error -- one of top two values null")
+      throw new Error("Integer Addition Error -- one of top two values not eve int")
     }
   }
 
+ 
+  create_string = (arg?: string | number) => {
+    if (isString(arg)) {
+      let newString = new EveString(arg);
+      this.push(newString);
+      return newString;
+    }
+    throw new Error("Str create error -- invalid arg: " + arg)
+  }
+
+  join_strings = () => {
+    // throw new Error('VM.int_add not impl')
+    let [top, second] = this.stack;
+    if (top instanceof EveString && second instanceof EveString) {
+      let jsResult = top.js + second.js;
+      let eveResult = new EveString(jsResult)
+      this.push(eveResult);
+      return eveResult;
+    } else {
+      throw new Error("Integer Addition Error -- one of top two values not eve int")
+    }
+  }
 
   private push(value: EveValue) {
     this.stack.push(value);
@@ -89,11 +86,19 @@ class EveVM implements VM {
 // (ideally in a traceable way...?)
 class Executor {
   static perform(instruction: Instruction, _vm: EveVM): VMResult {
-    console.log("[Executor.perform]", { instruction, vm: _vm });
-    let instructionName = ixTable[instruction];
-    let callee = _vm[instructionName]
-    console.log("[Executor.perform]", { instruction, instructionName, callee });
-    return callee.call(_vm);
+    // console.log("[Executor.perform]", { instruction, vm: _vm });
+    let instructionName = ixTable[instruction.opcode];
+    if (_vm[instructionName]) {
+      let callee = _vm[instructionName].bind(_vm);
+      // console.log("[Executor.perform]", { instruction, instructionName, callee });
+      if (instruction.value) {
+        return callee(instruction.value);
+      } else {
+        return callee();
+      }
+    } else {
+      throw new Error("[Executor] Instruction table does not have entry " + instruction.opcode);
+    }
   }
 }
 
@@ -101,8 +106,8 @@ class Executor {
 class Machine {
   vm = new EveVM()
   execute(program: Program): EveValue {
-    console.log("[Machine.execute]", { program })
-    let retValue = eveNull;
+    // console.log("[Machine.execute]", { program })
+    let retValue: VMResult = eveNull;
     program.forEach((instruction: Instruction) => {
       retValue = Executor.perform(instruction, this.vm)
     })
@@ -110,4 +115,10 @@ class Machine {
   }
 }
 
+const instruction =
+  (opcode: Opcode, value?: string | number): Instruction => {
+    return { opcode, ...(value !== undefined && { value: value as InstructionArgument }) }
+  }
+
+export { instruction }
 export default { Machine, EveInteger }
