@@ -1,8 +1,9 @@
-import { VM, EveValue, Register, Stack } from "./types";
+import { VM, EveValue, ConstantPool, Stack, VMDriver } from "./types";
 import { EveString } from "./EveString";
 import { EveInteger } from "./EveInteger";
 import { EveNull } from "./EveNull";
 import { RegistryKey } from "./RegistryKey";
+import { EveVMDriver } from "./EveVMDriver";
 
 const eveNull = new EveNull();
 const eveZero = new EveInteger(0);
@@ -10,20 +11,25 @@ const eveOne = new EveInteger(1);
 const eveTwo = new EveInteger(2);
 
 class EveVM implements VM {
-  public constants: EveValue[] = [];
+  driver: VMDriver = new EveVMDriver(this)
+  constants: ConstantPool = [];
   stack: Stack = [];
-  registry: Register = {
+  registry = {
     [RegistryKey.A]: eveNull,
     [RegistryKey.B]: eveNull,
     [RegistryKey.C]: eveNull,
     [RegistryKey.D]: eveNull,
   }
 
-  noop = () => process.stdout.write('[EveVM.noop] ...');
+  set constantPool(theConstants: ConstantPool) {
+    this.constants = theConstants
+  }
+
+  noop = () => {}
 
   load_const_zero = () => this.push(eveZero);
-  load_const_one = () => this.push(eveOne);
-  load_const_two = () => this.push(eveTwo);
+  load_const_one  = () => this.push(eveOne);
+  load_const_two  = () => this.push(eveTwo);
 
   load_const_by_index = (idx?: number) => {
     if (idx === undefined) {
@@ -84,12 +90,14 @@ class EveVM implements VM {
   pop_two = () => { this.pop(); this.pop() }
 
   jump_if_zero = () => { throw new Error('jumpz not impl') }
-  throw = () => { throw new Error('throw not impl') }
+  throw = () => {
+    let generalExceptionMessage = `Threw at line ${this.driver.instructionPointer} in ${this.driver.currentProgramName}`
+    throw new Error(`EveException: ${generalExceptionMessage}`)
+  }
 
   private push(value: EveValue) { this.stack.push(value); }
   private get top()  { return this.stack[this.stack.length-1] }
   private get second()  { return this.stack[this.stack.length-2] }
-
 }
 
 export { EveVM }

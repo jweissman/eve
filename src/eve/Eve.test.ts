@@ -1,4 +1,4 @@
-import { Driver } from "./Driver";
+import { Eve } from "./Eve";
 import { Instruction } from './types';
 import { EveString } from "./EveString";
 import { EveInteger } from "./EveInteger";
@@ -11,13 +11,11 @@ const inst =
     return { opcode, operandOne }
   }
 
-describe(Driver, () => {
-  const driver = new Driver();
+describe(Eve, () => {
+  const driver = new Eve();
 
   it('noop', () => {
-    let result = driver.execute([
-      inst(Opcode.NOOP),
-    ])
+    let result = driver.execute([ inst(Opcode.NOOP) ])
     expect(result.js).toEqual(null)
   })
 
@@ -83,6 +81,13 @@ describe(Driver, () => {
     expect(result.js).toEqual('hello there')
   })
 
-  test.todo('throws an error')
+  it('throws an error', () => {
+    let executeThrow = () => driver.execute([ inst(Opcode.THROW) ])
+    expect(executeThrow).toThrow( 'EveException: Threw at line 0 in _program')
+
+    let executeThrowOnLineOne = () => driver.execute([ inst(Opcode.NOOP), inst(Opcode.THROW) ])
+    expect(executeThrowOnLineOne).toThrow( 'EveException: Threw at line 1 in _program')
+  })
+
   test.todo('jumps to a specific program offset')
 });

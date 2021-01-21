@@ -1,13 +1,12 @@
 import { EveNull } from "./EveNull";
 import { EveVM } from "./EveVM";
-import { Executor } from "./Executor";
 import { VM, Program, EveValue } from "./types";
 
-export class Driver {
+export class Eve {
   vm: VM = new EveVM();
 
   execute(program: Program): EveValue {
-    Driver.runOnce(program, this.vm);
+    Eve.runOnce(program, this.vm);
     let top = this.vm.stack[this.vm.stack.length - 1];
     if (top !== undefined) {
       return top;
@@ -17,6 +16,7 @@ export class Driver {
   }
 
   static runOnce(program: Program, vm: VM) {
-    program.forEach(instruction => Executor.perform(instruction, vm));
+    vm.driver.load(program)
+    vm.driver.runUntilHalt()
   }
 }
