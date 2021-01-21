@@ -23,7 +23,7 @@ export class EveVMDriver extends VMDriver {
       });
       this.currentProgramName = '';
     } else {
-      throw new Error("no such program " + programName);
+      console.warn("no such program " + programName);
     }
   }
 }

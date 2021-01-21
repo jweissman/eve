@@ -29,10 +29,10 @@ export abstract class VMDriver {
 }
 
 type VM = VMKernel & {
-  driver: VMDriver,
-  constants: ConstantPool,
-  stack: Stack,
-  registry: Register,
+  constantPool: ConstantPool,
+  readonly driver: VMDriver,
+  readonly stack: Stack,
+  readonly registry: Register,
 }
 
 export { 

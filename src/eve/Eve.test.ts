@@ -47,7 +47,7 @@ describe(Eve, () => {
   });
   
   it('computes the sum of larger numbers', () => {
-    driver.vm.constants = [ new EveInteger(3), new EveInteger(4) ]
+    driver.vm.constantPool = [ new EveInteger(3), new EveInteger(4) ]
     let result = driver.execute([
       inst(Opcode.LCONST_IDX, 0),
       inst(Opcode.LCONST_IDX, 1),
@@ -57,7 +57,7 @@ describe(Eve, () => {
   });
 
   it('joins strings', () => {
-    driver.vm.constants = [ new EveString('hello '), new EveString('world') ]
+    driver.vm.constantPool = [ new EveString('hello '), new EveString('world') ]
     let result = driver.execute([
       inst(Opcode.LCONST_IDX, 0),
       inst(Opcode.LCONST_IDX, 1),
@@ -67,7 +67,7 @@ describe(Eve, () => {
   });
 
   it('stores and loads values', () => {
-    driver.vm.constants = [ new EveString('hello '), new EveString('there') ]
+    driver.vm.constantPool = [ new EveString('hello '), new EveString('there') ]
     let result = driver.execute([
       inst(Opcode.LCONST_IDX, 0),
       inst(Opcode.ASTORE, RegistryKey.A),
@@ -87,6 +87,10 @@ describe(Eve, () => {
 
     let executeThrowOnLineOne = () => driver.execute([ inst(Opcode.NOOP), inst(Opcode.THROW) ])
     expect(executeThrowOnLineOne).toThrow( 'EveException: Threw at line 1 in _program')
+  })
+
+  it('illegal op', () => {
+    expect(() => driver.execute([ inst(-1) ])).toThrow()
   })
 
   test.todo('jumps to a specific program offset')

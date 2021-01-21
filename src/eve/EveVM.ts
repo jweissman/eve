@@ -1,4 +1,4 @@
-import { VM, EveValue, ConstantPool, Stack, VMDriver } from "./types";
+import { VM, ConstantPool, Stack, VMDriver, EveValue, Register } from "./types";
 import { EveString } from "./EveString";
 import { EveInteger } from "./EveInteger";
 import { EveNull } from "./EveNull";
@@ -11,10 +11,11 @@ const eveOne = new EveInteger(1);
 const eveTwo = new EveInteger(2);
 
 class EveVM implements VM {
+  private constants: ConstantPool = [];
+
   driver: VMDriver = new EveVMDriver(this)
-  constants: ConstantPool = [];
   stack: Stack = [];
-  registry = {
+  registry: Register = {
     [RegistryKey.A]: eveNull,
     [RegistryKey.B]: eveNull,
     [RegistryKey.C]: eveNull,
@@ -25,6 +26,8 @@ class EveVM implements VM {
     this.constants = theConstants
   }
 
+  get constantPool() { return this.constants }
+
   noop = () => {}
 
   load_const_zero = () => this.push(eveZero);
@@ -33,12 +36,10 @@ class EveVM implements VM {
 
   load_const_by_index = (idx?: number) => {
     if (idx === undefined) {
-      console.warn("[EveVM.load_const_by_index] index was undefined?", { idx });
       throw new Error("Load const by index failed, index undefined")
     } 
 
     if (this.constants[idx] === undefined) {
-      console.warn("[EveVM.load_const_by_index] const pool value at index was undefined?", { idx });
       throw new Error("Load const by index failed, target constant undefined")
     }
     let theConst = this.constants[idx];
@@ -48,7 +49,6 @@ class EveVM implements VM {
   add_integers = () => {
     let { top, second } = this;
     if (!(top instanceof EveInteger && second instanceof EveInteger)) {
-      console.warn("[EveVM.add_integers] Error, values not int?", { top, second })
       throw new Error("Integer Addition Error -- one of top two values not eve int");
     }
     let jsResult = top.js + second.js;
@@ -60,7 +60,6 @@ class EveVM implements VM {
   join_strings = () => {
     let {top, second} = this;
     if (!(top instanceof EveString && second instanceof EveString)) {
-      console.warn("[EveVM.join_strings] Error, values not str?", { top, second })
       throw new Error("Str join Error -- one of top two values not eve string");
     } 
     let jsResult = second.js + top.js;
@@ -70,19 +69,15 @@ class EveVM implements VM {
   };
 
   load_from_store = (register?: number) => {
-    if (register === undefined) {
-      console.warn("[EveVM.load_from_store] registry key was undefined?", { key: register });
-      throw new Error("Load from store failed, key undefined")
-    }
+    if (register === undefined) { throw new Error("Load from store failed, key undefined") }
+    if (!(register in RegistryKey)) { throw new Error('Invalid register: ' + register) }
     let storedValue = this.registry[register];
     this.push(storedValue)
   }
 
   add_to_store = (register?: number) => {
-    if (register === undefined) {
-      console.warn("[EveVM.add_to_store] registry key was undefined?", { key: register });
-      throw new Error("Add to Store: key undefined")
-    }
+    if (register === undefined) { throw new Error("Add to Store: key undefined") }
+    if (!(register in RegistryKey)) { throw new Error('Invalid register: ' + register) }
     this.registry[register] = this.top;
   }
 
