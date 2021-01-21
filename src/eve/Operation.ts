@@ -10,4 +10,6 @@ export enum Operation {
   AddToStore = 'add_to_store',
   Pop = 'pop',
   PopTwo = 'pop_two',
+  JumpIfZero = 'jump_if_zero',
+  Throw = 'throw',
 }

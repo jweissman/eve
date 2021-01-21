@@ -1,20 +1,28 @@
-import Eve, { instruction as inst } from '.';
-import { EveInteger, EveString } from './types';
+import { Driver } from "./Driver";
+import { Instruction } from './types';
+import { EveString } from "./EveString";
+import { EveInteger } from "./EveInteger";
 import { Opcode } from "./Opcode";
-import { RegistryKey } from './EveVM';
+import { RegistryKey } from "./RegistryKey";
 
-describe(Eve.Runner, () => {
+// build an instruction
+const inst =
+  (opcode: Opcode, operandOne?: number): Instruction => {
+    return { opcode, operandOne }
+  }
+
+describe(Driver, () => {
+  const driver = new Driver();
+
   it('noop', () => {
-    let machine = new Eve.Runner()
-    let result = machine.execute([
+    let result = driver.execute([
       inst(Opcode.NOOP),
     ])
     expect(result.js).toEqual(null)
   })
 
   it('computes the sum of one added to itself', () => {
-    let machine = new Eve.Runner()
-    let result = machine.execute([
+    let result = driver.execute([
       inst(Opcode.LCONST_ONE),
       inst(Opcode.LCONST_ONE),
       inst(Opcode.INT_ADD)
@@ -23,8 +31,7 @@ describe(Eve.Runner, () => {
   });
   
   it('computes the sum of one and two', () => {
-    let machine = new Eve.Runner()
-    let result = machine.execute([
+    let result = driver.execute([
       inst(Opcode.LCONST_ONE),
       inst(Opcode.LCONST_TWO),
       inst(Opcode.INT_ADD)
@@ -33,8 +40,7 @@ describe(Eve.Runner, () => {
   });
 
   it('computes the sum of zero and one', () => {
-    let machine = new Eve.Runner()
-    let result = machine.execute([
+    let result = driver.execute([
       inst(Opcode.LCONST_ONE),
       inst(Opcode.LCONST_ZERO),
       inst(Opcode.INT_ADD)
@@ -43,9 +49,8 @@ describe(Eve.Runner, () => {
   });
   
   it('computes the sum of larger numbers', () => {
-    let machine = new Eve.Runner()
-    machine.vm.constants = [ new EveInteger(3), new EveInteger(4) ]
-    let result = machine.execute([
+    driver.vm.constants = [ new EveInteger(3), new EveInteger(4) ]
+    let result = driver.execute([
       inst(Opcode.LCONST_IDX, 0),
       inst(Opcode.LCONST_IDX, 1),
       inst(Opcode.INT_ADD)
@@ -54,9 +59,8 @@ describe(Eve.Runner, () => {
   });
 
   it('joins strings', () => {
-    let machine = new Eve.Runner()
-    machine.vm.constants = [ new EveString('hello '), new EveString('world') ]
-    let result = machine.execute([
+    driver.vm.constants = [ new EveString('hello '), new EveString('world') ]
+    let result = driver.execute([
       inst(Opcode.LCONST_IDX, 0),
       inst(Opcode.LCONST_IDX, 1),
       inst(Opcode.STR_JOIN)
@@ -65,9 +69,8 @@ describe(Eve.Runner, () => {
   });
 
   it('stores and loads values', () => {
-    let machine = new Eve.Runner();
-    machine.vm.constants = [ new EveString('hello '), new EveString('there') ]
-    let result = machine.execute([
+    driver.vm.constants = [ new EveString('hello '), new EveString('there') ]
+    let result = driver.execute([
       inst(Opcode.LCONST_IDX, 0),
       inst(Opcode.ASTORE, RegistryKey.A),
       inst(Opcode.LCONST_IDX, 1),
@@ -79,4 +82,7 @@ describe(Eve.Runner, () => {
     ])
     expect(result.js).toEqual('hello there')
   })
+
+  test.todo('throws an error')
+  test.todo('jumps to a specific program offset')
 });

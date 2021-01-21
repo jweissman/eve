@@ -1,0 +1,6 @@
+export enum RegistryKey {
+  A = 0x00,
+  B = 0x01,
+  C = 0x02,
+  D = 0x03,
+}

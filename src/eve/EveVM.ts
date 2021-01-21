@@ -1,39 +1,23 @@
-import { VM, EveValue,EveInteger, EveString, EveNull } from "./types";
+import { VM, EveValue, Register, Stack } from "./types";
+import { EveString } from "./EveString";
+import { EveInteger } from "./EveInteger";
+import { EveNull } from "./EveNull";
+import { RegistryKey } from "./RegistryKey";
 
-export const eveNull = new EveNull();
-export const eveZero = new EveInteger(0);
-export const eveOne = new EveInteger(1);
-export const eveTwo = new EveInteger(2);
+const eveNull = new EveNull();
+const eveZero = new EveInteger(0);
+const eveOne = new EveInteger(1);
+const eveTwo = new EveInteger(2);
 
-type Stack = EveValue[]
-type Register = { a: EveValue, b: EveValue, c: EveValue, d: EveValue } 
-
-export enum RegistryKey {
-  A = 0x00,
-  B = 0x01,
-  C = 0x02,
-  D = 0x03
-}
-
-const keyForRegister = (value: RegistryKey): string => {
-  switch(value) {
-    case RegistryKey.A: return 'a';
-    case RegistryKey.B: return 'b';
-    case RegistryKey.C: return 'c';
-    case RegistryKey.D: return 'd';
-  }
-}
-
-export class EveVM implements VM {
+class EveVM implements VM {
+  public constants: EveValue[] = [];
   stack: Stack = [];
   registry: Register = {
-    a: eveNull,
-    b: eveNull,
-    c: eveNull,
-    d: eveNull,
+    [RegistryKey.A]: eveNull,
+    [RegistryKey.B]: eveNull,
+    [RegistryKey.C]: eveNull,
+    [RegistryKey.D]: eveNull,
   }
-
-  public constants: EveValue[] = [];
 
   noop = () => process.stdout.write('[EveVM.noop] ...');
 
@@ -84,8 +68,7 @@ export class EveVM implements VM {
       console.warn("[EveVM.load_from_store] registry key was undefined?", { key: register });
       throw new Error("Load from store failed, key undefined")
     }
-    let key = keyForRegister(register);
-    let storedValue = this.registry[key];
+    let storedValue = this.registry[register];
     this.push(storedValue)
   }
 
@@ -94,15 +77,19 @@ export class EveVM implements VM {
       console.warn("[EveVM.add_to_store] registry key was undefined?", { key: register });
       throw new Error("Add to Store: key undefined")
     }
-    let key = keyForRegister(register);
-    this.registry[key] = this.top;
+    this.registry[register] = this.top;
   }
 
   pop = () => this.stack.pop();
   pop_two = () => { this.pop(); this.pop() }
+
+  jump_if_zero = () => { throw new Error('jumpz not impl') }
+  throw = () => { throw new Error('throw not impl') }
 
   private push(value: EveValue) { this.stack.push(value); }
   private get top()  { return this.stack[this.stack.length-1] }
   private get second()  { return this.stack[this.stack.length-2] }
 
 }
+
+export { EveVM }
