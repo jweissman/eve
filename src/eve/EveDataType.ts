@@ -1,4 +1,4 @@
-import { JSValue } from "./types";
+import { JSValue } from './types'
 
 
 export abstract class EveDataType {

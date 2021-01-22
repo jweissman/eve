@@ -11,10 +11,16 @@
     "build:dev": "./tasks/build.sh -d",
     "start": "node ./dist/index.js",
     "test": "jest src/eve",
+    "lint": "yarn run eslint src/eve/*.ts",
+    "verify": "yarn run test lint",
+    "watch": "yarn run test --watch",
     "release": "./tasks/release.sh"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
+    "@typescript-eslint/parser": "^4.14.0",
+    "eslint": "^7.18.0",
     "jest": "^26.6.3",
     "ts-jest": "^26.4.4",
     "typescript": "^3.9.7"

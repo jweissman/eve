@@ -1,10 +1,10 @@
-import { EveInteger } from "./EveInteger";
-import { EveNull } from "./EveNull";
-import { EveString } from "./EveString";
-import { Opcode } from "./Opcode";
-import { Operation } from "./Operation";
-import { RegistryKey } from "./RegistryKey";
-import { VMDriver } from "./VMDriver";
+import { EveInteger } from './EveInteger'
+import { EveNull } from './EveNull'
+import { EveString } from './EveString'
+import { Opcode } from './Opcode'
+import { Operation } from './Operation'
+import { RegistryKey } from './RegistryKey'
+import { VMDriver } from './VMDriver'
 
 type OperandByte = number
 type Instruction = {
@@ -16,7 +16,7 @@ type Instruction = {
   operandTwo?: OperandByte,
 
   // support gotos
-  // (in theory we can convert these to unconditional jumps?)
+  // (in practice we optimize these to unconditional jumps!)
   label?: string,
   targetLabel?: string,
 }
@@ -40,6 +40,7 @@ type VM = VMKernel & {
   stack: Stack,
   readonly driver: VMDriver,
   readonly registry: Register,
+  readonly halted: boolean,
 }
 
 export { 

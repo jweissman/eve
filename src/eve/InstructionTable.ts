@@ -1,5 +1,5 @@
-import { Opcode } from "./Opcode";
-import { Operation } from "./Operation";
+import { Opcode } from './Opcode'
+import { Operation } from './Operation'
 
 type InstructionTable = { [key in Opcode]: Operation } 
 const instructionTable: InstructionTable = {
@@ -24,6 +24,6 @@ const instructionTable: InstructionTable = {
   [Opcode.THROW]: Operation.Throw,
 
   [Opcode.GOTO]: Operation.Goto,
-};
+}
 
-export { instructionTable };
+export { instructionTable }
