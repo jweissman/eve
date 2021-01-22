@@ -24,9 +24,6 @@ class EveVM implements VM {
   }
 
   set constantPool(theConstants: ConstantPool) { this.constants = theConstants }
-  get constantPool() { return this.constants }
-
-  get ip() { return this.driver.instructionPointer }
   set ip(programOffset: number) { this.driver.instructionPointer = programOffset }
 
   noop = () => {}

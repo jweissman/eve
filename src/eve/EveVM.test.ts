@@ -43,10 +43,21 @@ describe(EveVM, () => {
       expect(() => vm.load_const_by_index()).toThrow()
     })
 
-    it('throws on nonsense operand', () => {
+    it('throws on missing/nonsense operand', () => {
+      expect(() => vm.load_const_by_index({})).toThrow()
       expect(() => vm.load_const_by_index({ operandOne: -1 })).toThrow()
+      expect(() => vm.add_to_store({})).toThrow()
       expect(() => vm.add_to_store({ operandOne: -1 })).toThrow()
+      expect(() => vm.load_from_store({})).toThrow()
       expect(() => vm.load_from_store({ operandOne: -1 })).toThrow()
+      expect(() => vm.jump()).toThrow()
+      expect(() => vm.jump({})).toThrow()
+      expect(() => vm.jump_if_zero()).toThrow()
+      expect(() => vm.jump_if_zero({})).toThrow()
+    })
+
+    it('throws even on valid goto', () => {
+      expect(() => vm.goto()).toThrow('goto not actually valid')
     })
   })
 })

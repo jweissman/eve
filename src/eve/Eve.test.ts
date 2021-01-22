@@ -137,5 +137,7 @@ describe(Eve, () => {
     ])
     expect(result.js).toEqual(0)
   })
+
+  test.todo('goto with missing label')
   test.todo('invokes a subroutine and returns')
 });
