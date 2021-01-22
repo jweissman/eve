@@ -1,4 +1,5 @@
-import { VM, ConstantPool, Stack, VMDriver, EveValue, Register } from "./types";
+import { VM, ConstantPool, Stack, EveValue, Register } from "./types";
+import { VMDriver } from "./VMDriver";
 import { EveString } from "./EveString";
 import { EveInteger } from "./EveInteger";
 import { EveNull } from "./EveNull";
@@ -22,11 +23,11 @@ class EveVM implements VM {
     [RegistryKey.D]: eveNull,
   }
 
-  set constantPool(theConstants: ConstantPool) {
-    this.constants = theConstants
-  }
-
+  set constantPool(theConstants: ConstantPool) { this.constants = theConstants }
   get constantPool() { return this.constants }
+
+  get ip() { return this.driver.instructionPointer }
+  set ip(programOffset: number) { this.driver.instructionPointer = programOffset }
 
   noop = () => {}
 
@@ -84,7 +85,15 @@ class EveVM implements VM {
   pop = () => this.stack.pop();
   pop_two = () => { this.pop(); this.pop() }
 
-  jump_if_zero = () => { throw new Error('jumpz not impl') }
+  jump_if_zero = (programOffset?: number) => {
+    if (programOffset === undefined) {
+      throw new Error('jump if zero: program offset undefined')
+    }
+    if (this.top.js === 0) {
+      this.ip = programOffset;
+    }
+  }
+
   throw = () => {
     let generalExceptionMessage = `Threw at line ${this.driver.instructionPointer} in ${this.driver.currentProgramName}`
     throw new Error(`EveException: ${generalExceptionMessage}`)

@@ -1,8 +1,13 @@
 import { EveString } from "./EveString";
 import { EveVM } from "./EveVM";
+import { VM } from "./types";
 
 describe(EveVM, () => {
-  let vm: EveVM = new EveVM();
+  let vm: VM;
+   beforeEach(() => {
+     vm = new EveVM()
+   });
+
   it('can add integers', () => {
     vm.load_const_one();
     vm.load_const_one();
@@ -22,20 +27,26 @@ describe(EveVM, () => {
 
   it('loads constants by index', () => {
     vm.constantPool = [ new EveString('hello') ]
+    vm.load_const_by_index(0)
+    expect(vm.stack[vm.stack.length-1].js).toEqual('hello')
   })
 
-  it('throws on data type mismatch', () => {
-    expect(() => vm.add_integers()).toThrow()
-    expect(() => vm.join_strings()).toThrow()
-  })
-  it('throws on missing operand',() => {
-    expect(() => vm.load_from_store()).toThrow()
-    expect(() => vm.add_to_store()).toThrow()
-    expect(() => vm.load_const_by_index()).toThrow()
-  })
-  it('throws on nonsense operand', () => {
-    expect(() => vm.load_const_by_index(-1)).toThrow()
-    expect(() => vm.add_to_store(-1)).toThrow()
-    expect(() => vm.load_from_store(-1)).toThrow()
+  describe('error conditions', () => {
+    it('throws on data type mismatch', () => {
+      expect(() => vm.add_integers()).toThrow()
+      expect(() => vm.join_strings()).toThrow()
+    })
+
+    it('throws on missing operand', () => {
+      expect(() => vm.load_from_store()).toThrow()
+      expect(() => vm.add_to_store()).toThrow()
+      expect(() => vm.load_const_by_index()).toThrow()
+    })
+
+    it('throws on nonsense operand', () => {
+      expect(() => vm.load_const_by_index(-1)).toThrow()
+      expect(() => vm.add_to_store(-1)).toThrow()
+      expect(() => vm.load_from_store(-1)).toThrow()
+    })
   })
 })

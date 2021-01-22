@@ -1,4 +1,5 @@
-import { VM, Program, VMDriver } from "./types";
+import { VM, Program } from "./types";
+import { VMDriver } from "./VMDriver";
 import { Executor } from "./Executor";
 
 export class EveVMDriver extends VMDriver {
@@ -14,13 +15,20 @@ export class EveVMDriver extends VMDriver {
 
   runUntilHalt(programName: string = '_program') {
     let program = this.programLibrary[programName];
-    this.instructionPointer = -1;
+    this.instructionPointer = 0;
     if (program) {
       this.currentProgramName = programName;
-      program.forEach(instruction => {
-        this.instructionPointer++;
-        Executor.perform(instruction, this.vm);
-      });
+      let nextInstruction = program[0];
+      while(true) {
+        let oldIp = this.instructionPointer;
+        Executor.perform(nextInstruction, this.vm);
+        if (oldIp === this.instructionPointer) {
+          // vm didn't move the ip => so increment it
+          this.instructionPointer++
+        }
+        nextInstruction = program[this.instructionPointer];
+        if (!nextInstruction) { break; }
+      }
       this.currentProgramName = '';
     } else {
       console.warn("no such program " + programName);

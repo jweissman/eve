@@ -4,6 +4,7 @@ import { EveString } from "./EveString";
 import { Opcode } from "./Opcode";
 import { Operation } from "./Operation";
 import { RegistryKey } from "./RegistryKey";
+import { VMDriver } from "./VMDriver";
 
 type OperandByte = number
 type Instruction = {
@@ -19,19 +20,11 @@ type VMKernel = { [key in Operation]: VMMethod }
 type Stack = EveValue[]
 type Register = { [key in RegistryKey]: EveValue } 
 type ConstantPool = EveValue[]
-// type Locals = EveValue[]
-
-export abstract class VMDriver {
-  abstract load(program: Program): void
-  abstract runUntilHalt(): void
-  abstract get currentProgramName(): string;
-  abstract get instructionPointer(): number;
-}
 
 type VM = VMKernel & {
   constantPool: ConstantPool,
+  stack: Stack,
   readonly driver: VMDriver,
-  readonly stack: Stack,
   readonly registry: Register,
 }
 

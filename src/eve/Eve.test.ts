@@ -93,5 +93,15 @@ describe(Eve, () => {
     expect(() => driver.execute([ inst(-1) ])).toThrow()
   })
 
-  test.todo('jumps to a specific program offset')
+  it('jumps to a specific program offset', () => {
+    let result = driver.execute([
+      inst(Opcode.LCONST_ONE),  // 0
+      inst(Opcode.JUMP_Z, 4),   // 1
+      inst(Opcode.LCONST_ZERO), // 2
+      inst(Opcode.JUMP_Z, 5),   // 3
+      inst(Opcode.THROW),       // 4
+      inst(Opcode.LCONST_TWO),  // 5
+    ])
+    expect(result.js).toEqual(2)
+  })
 });
