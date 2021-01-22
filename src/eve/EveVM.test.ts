@@ -17,9 +17,9 @@ describe(EveVM, () => {
 
   it('can join strings', () => {
     vm.constantPool = [ new EveString('hi'), new EveString(' '), new EveString('there')]
-    vm.load_const_by_index(0);
-    vm.load_const_by_index(1);
-    vm.load_const_by_index(2);
+    vm.load_const_by_index({ operandOne: 0 });
+    vm.load_const_by_index({ operandOne: 1 });
+    vm.load_const_by_index({ operandOne: 2 });
     vm.join_strings()
     vm.join_strings()
     expect(vm.stack[vm.stack.length-1].js).toEqual('hi there')
@@ -27,7 +27,7 @@ describe(EveVM, () => {
 
   it('loads constants by index', () => {
     vm.constantPool = [ new EveString('hello') ]
-    vm.load_const_by_index(0)
+    vm.load_const_by_index({ operandOne: 0 })
     expect(vm.stack[vm.stack.length-1].js).toEqual('hello')
   })
 
@@ -44,9 +44,9 @@ describe(EveVM, () => {
     })
 
     it('throws on nonsense operand', () => {
-      expect(() => vm.load_const_by_index(-1)).toThrow()
-      expect(() => vm.add_to_store(-1)).toThrow()
-      expect(() => vm.load_from_store(-1)).toThrow()
+      expect(() => vm.load_const_by_index({ operandOne: -1 })).toThrow()
+      expect(() => vm.add_to_store({ operandOne: -1 })).toThrow()
+      expect(() => vm.load_from_store({ operandOne: -1 })).toThrow()
     })
   })
 })

@@ -1,4 +1,4 @@
-import { VM, ConstantPool, Stack, EveValue, Register } from "./types";
+import { VM, ConstantPool, Stack, EveValue, Register, VMMethodArgs } from "./types";
 import { VMDriver } from "./VMDriver";
 import { EveString } from "./EveString";
 import { EveInteger } from "./EveInteger";
@@ -35,7 +35,9 @@ class EveVM implements VM {
   load_const_one  = () => this.push(eveOne);
   load_const_two  = () => this.push(eveTwo);
 
-  load_const_by_index = (idx?: number) => {
+  load_const_by_index = (instruction?: VMMethodArgs) => {
+    if (!instruction) { throw new Error("no instruction")}
+    const { operandOne: idx } = instruction;
     if (idx === undefined) {
       throw new Error("Load const by index failed, index undefined")
     } 
@@ -69,14 +71,20 @@ class EveVM implements VM {
     this.push(eveResult);
   };
 
-  load_from_store = (register?: number) => {
+  // load_from_store = (register?: number) => {
+  load_from_store = (instruction?: VMMethodArgs) => {
+    if (!instruction) { throw new Error("no instruction")}
+    const { operandOne: register } = instruction;
     if (register === undefined) { throw new Error("Load from store failed, key undefined") }
     if (!(register in RegistryKey)) { throw new Error('Invalid register: ' + register) }
     let storedValue = this.registry[register];
     this.push(storedValue)
   }
 
-  add_to_store = (register?: number) => {
+  // add_to_store = (register?: number) => {
+  add_to_store = (instruction?: VMMethodArgs) => {
+    if (!instruction) { throw new Error("no instruction")}
+    const { operandOne: register } = instruction;
     if (register === undefined) { throw new Error("Add to Store: key undefined") }
     if (!(register in RegistryKey)) { throw new Error('Invalid register: ' + register) }
     this.registry[register] = this.top;
@@ -85,7 +93,19 @@ class EveVM implements VM {
   pop = () => this.stack.pop();
   pop_two = () => { this.pop(); this.pop() }
 
-  jump_if_zero = (programOffset?: number) => {
+  jump = (instruction?: VMMethodArgs) => {
+    if (!instruction) { throw new Error("no instruction")}
+    const { operandOne: programOffset } = instruction;
+    if (programOffset === undefined) {
+      throw new Error('jump: program offset undefined')
+    }
+    this.ip = programOffset;
+  }
+
+  jump_if_zero = (instruction?: VMMethodArgs) => {
+    if (!instruction) { throw new Error("no instruction")}
+    const { operandOne: programOffset } = instruction;
+    // const { operandOne } = args;
     if (programOffset === undefined) {
       throw new Error('jump if zero: program offset undefined')
     }
@@ -98,6 +118,8 @@ class EveVM implements VM {
     let generalExceptionMessage = `Threw at line ${this.driver.instructionPointer} in ${this.driver.currentProgramName}`
     throw new Error(`EveException: ${generalExceptionMessage}`)
   }
+
+  goto = () => { throw new Error('goto not actually valid (note: should get optimized into unconditional jumps)')}
 
   private push(value: EveValue) { this.stack.push(value); }
   private get top()  { return this.stack[this.stack.length-1] }

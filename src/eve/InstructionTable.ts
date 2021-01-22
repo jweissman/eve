@@ -18,8 +18,12 @@ const instructionTable: InstructionTable = {
   [Opcode.POP]: Operation.Pop,
   [Opcode.POP2]: Operation.PopTwo,
 
+  [Opcode.JUMP]: Operation.Jump,
   [Opcode.JUMP_Z]: Operation.JumpIfZero,
+
   [Opcode.THROW]: Operation.Throw,
+
+  [Opcode.GOTO]: Operation.Goto,
 };
 
 export { instructionTable };

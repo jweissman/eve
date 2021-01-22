@@ -11,5 +11,7 @@ export enum Operation {
   Pop = 'pop',
   PopTwo = 'pop_two',
   JumpIfZero = 'jump_if_zero',
+  Jump = 'jump',
   Throw = 'throw',
+  Goto = 'goto',
 }

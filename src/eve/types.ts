@@ -8,13 +8,27 @@ import { VMDriver } from "./VMDriver";
 
 type OperandByte = number
 type Instruction = {
+  // opcode indicates the instruction to execute
   opcode: Opcode,
-  operandOne?: OperandByte
-};
+
+  // some operations require arguments (operands)
+  operandOne?: OperandByte,
+  operandTwo?: OperandByte,
+
+  // support gotos
+  // (in theory we can convert these to unconditional jumps?)
+  label?: string,
+  targetLabel?: string,
+}
 type Program = Instruction[];
 type JSValue = number | string | null
 type EveValue = EveNull | EveInteger | EveString
-type VMMethod = (operandOne?: number, operandTwo?: number) => void 
+type VMMethodArgs = Partial<{
+  operandOne: number,
+  operandTwo: number,
+  targetLabel: string
+}>
+type VMMethod = (instruction?: VMMethodArgs) => void 
 type VMKernel = { [key in Operation]: VMMethod }
 
 type Stack = EveValue[]
@@ -29,6 +43,8 @@ type VM = VMKernel & {
 }
 
 export { 
+  VMMethodArgs,
+
   Instruction,
   Stack, Register, ConstantPool,
   Program, JSValue,

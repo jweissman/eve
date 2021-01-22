@@ -1,6 +1,7 @@
 import { VM, Program } from "./types";
 import { VMDriver } from "./VMDriver";
 import { Executor } from "./Executor";
+import { Opcode } from "./Opcode";
 
 export class EveVMDriver extends VMDriver {
   private programLibrary: { [key: string]: Program; } = { _main: [] };
@@ -10,7 +11,33 @@ export class EveVMDriver extends VMDriver {
   constructor(private vm: VM) { super(); }
 
   load(program: Program, name: string = '_program') {
-    this.programLibrary[name] = program;
+    // could optimize the program -- not having to seek indexOf every time...
+    let optimized: Program = program.map(instruction => {
+      let newInstruction = { ...instruction }
+      if (instruction.opcode === Opcode.GOTO) {
+        let targetInstruction = program.find((inst) => inst.label === instruction.targetLabel);
+        if (targetInstruction) {
+        // replace with unconditional jump
+          newInstruction.opcode = Opcode.JUMP;
+          newInstruction.operandOne = program.indexOf(targetInstruction);
+        }
+      }
+      return newInstruction
+    })
+
+    this.programLibrary[name] = optimized;
+  }
+
+  get program(): Program {
+    return this.programLibrary[this.currentProgramName]
+  }
+
+  getProgramOffsetForLabel(label: string): number {
+    let targetInstruction = this.program.find((instruction) => instruction.label === label);
+    if (targetInstruction) {
+      return this.program.indexOf(targetInstruction);
+    }
+    throw new Error("Could not find offset for label " + label)
   }
 
   runUntilHalt(programName: string = '_program') {

@@ -15,9 +15,12 @@ export enum Opcode {
   LSTORE = 0xc1,
   ASTORE = 0xc2,
 
-  POP  = 0xd1,
+  POP = 0xd1,
   POP2 = 0xd2,
 
   THROW = 0xe0,
   JUMP_Z = 0xe1,
+
+  GOTO = 0xf0,
+  JUMP = 0xf1,
 }

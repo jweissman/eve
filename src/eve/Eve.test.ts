@@ -11,6 +11,14 @@ const inst =
     return { opcode, operandOne }
   }
 
+const label = (labelName: string): Instruction => {
+  return { opcode: Opcode.NOOP, label: labelName }
+}
+
+const goto = (labelName: string): Instruction => {
+  return { opcode: Opcode.GOTO, targetLabel: labelName }
+}
+
 describe(Eve, () => {
   const driver = new Eve();
 
@@ -104,4 +112,30 @@ describe(Eve, () => {
     ])
     expect(result.js).toEqual(2)
   })
+
+  it('goto label', () => {
+    driver.vm.constantPool = [
+      new EveInteger(-1),
+      new EveInteger(100000)
+    ]
+    let result = driver.execute([
+      inst(Opcode.LCONST_IDX, 1), 
+      inst(Opcode.ASTORE, RegistryKey.A),
+      label('start'),
+      inst(Opcode.LSTORE, RegistryKey.A),
+      inst(Opcode.JUMP_Z, 6),
+      goto('sub'),
+      goto('done'),
+      label('sub'),
+      inst(Opcode.LSTORE, RegistryKey.A),
+      inst(Opcode.LCONST_IDX, 0), 
+      inst(Opcode.INT_ADD),
+      inst(Opcode.ASTORE, RegistryKey.A),
+      goto('start'),
+      label('done'),
+      inst(Opcode.LSTORE, RegistryKey.A),
+    ])
+    expect(result.js).toEqual(0)
+  })
+  test.todo('invokes a subroutine and returns')
 });
