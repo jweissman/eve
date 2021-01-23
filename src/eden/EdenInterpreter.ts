@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import assertNever from 'assert-never'
-import { Eve } from '../Eve'
-import { EveInteger } from '../vm/data-types/EveInteger'
-import { inst } from '../vm/InstructionHelpers'
-import { Opcode } from '../vm/Opcode'
-import { ConstantPool, Instruction, JSValue } from '../vm/types'
+import { Eve } from '../eve/Eve'
+import { EveInteger } from '../eve/vm/data-types/EveInteger'
+import { inst } from '../eve/vm/InstructionHelpers'
+import { Opcode } from '../eve/vm/Opcode'
+import { ConstantPool, Instruction, JSValue } from '../eve/vm/types'
 import { ASTNode } from './ASTNode'
 import { ASTNodeKind } from './ASTNodeKind'
 import { BinaryOperator } from './BinaryOperator'
@@ -64,10 +64,10 @@ export class EdenInterpreter implements Interpreter {
     const code = this.interpret(ast)
     // console.log("Parsed ast: " + JSON.stringify(ast))
     // const instructions = this.parser.codegen()
-    console.log('CODE', code)
+    // console.log('CODE', code)
 
     const eve = new Eve()
-    console.log("set constants", this.engine.constants)
+    // console.log("set constants", this.engine.constants)
     eve.vm.constantPool = this.engine.constants
     return eve.execute(code).js
     // throw new Error('EdenInterpreter.evalute: Method not implemented.')

@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+let eden = require('../dist/eden-cli')
+console.log("hello from /bin/eden")

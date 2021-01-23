@@ -10,7 +10,7 @@
     "build": "./tasks/build.sh",
     "build:dev": "./tasks/build.sh -d",
     "start": "node ./dist/index.js",
-    "test": "jest src/eve",
+    "test": "jest src/eve src/eden",
     "lint": "yarn run eslint src/eve/*.ts",
     "verify": "yarn run test lint",
     "watch": "yarn run test --watch",
