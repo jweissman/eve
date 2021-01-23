@@ -1,6 +1,6 @@
-import { EveString } from './EveString'
+import { EveString } from '../data-types/EveString'
 import { EveVM } from './EveVM'
-import { VM } from './types'
+import { VM } from '../types'
 
 describe(EveVM, () => {
   let vm: VM
@@ -56,7 +56,7 @@ describe(EveVM, () => {
       expect(() => vm.jump_if_zero({})).toThrow()
     })
 
-    it('throws even on valid goto', () => {
+    it('throws on goto', () => {
       expect(() => vm.goto()).toThrow('goto not actually valid')
     })
   })

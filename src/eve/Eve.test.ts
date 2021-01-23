@@ -1,9 +1,9 @@
 import { Eve } from './Eve'
-import { Instruction } from './types'
-import { EveString } from './EveString'
-import { EveInteger } from './EveInteger'
-import { Opcode } from './Opcode'
-import { RegistryKey } from './RegistryKey'
+import { Instruction } from './vm/types'
+import { EveString } from './vm/data-types/EveString'
+import { EveInteger } from './vm/data-types/EveInteger'
+import { Opcode } from './vm/Opcode'
+import { RegistryKey } from './vm/RegistryKey'
 
 // build an instruction
 const inst =

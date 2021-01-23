@@ -1,7 +1,7 @@
-import { VM, Program } from './types'
+import { VM, Program } from '../types'
 import { VMDriver } from './VMDriver'
-import { Executor } from './Executor'
-import { Opcode } from './Opcode'
+import { Executor } from '../Executor'
+import { Opcode } from '../Opcode'
 
 type FlightRecording = {
   instructionsPerformed: number,

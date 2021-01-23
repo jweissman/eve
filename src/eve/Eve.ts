@@ -1,7 +1,6 @@
-import { EveNull } from './EveNull'
-import { EveVM } from './EveVM'
-// import { instructionTable } from "./InstructionTable";
-import { VM, Program, EveValue } from './types'
+import { EveNull } from './vm/data-types/EveNull'
+import { EveVM } from './vm/driver/EveVM'
+import { VM, Program, EveValue } from './vm/types'
 
 export class Eve {
   vm: VM = new EveVM();
@@ -17,9 +16,6 @@ export class Eve {
   }
 
   static runOnce(program: Program, vm: VM): void {
-    // console.log("[Eve.runOnce] Program: "
-    // program.map((instruction, index) => `\n\t${index}: ${instructionTable[instruction.opcode]}`)
-    // );
     vm.driver.load(program)
     vm.driver.runUntilHalt()
   }

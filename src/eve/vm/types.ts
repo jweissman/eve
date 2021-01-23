@@ -1,10 +1,10 @@
-import { EveInteger } from './EveInteger'
-import { EveNull } from './EveNull'
-import { EveString } from './EveString'
+import { EveInteger } from './data-types/EveInteger'
+import { EveNull } from './data-types/EveNull'
+import { EveString } from './data-types/EveString'
 import { Opcode } from './Opcode'
 import { Operation } from './Operation'
 import { RegistryKey } from './RegistryKey'
-import { VMDriver } from './VMDriver'
+import { VMDriver } from './driver/VMDriver'
 
 type OperandByte = number
 type Instruction = {

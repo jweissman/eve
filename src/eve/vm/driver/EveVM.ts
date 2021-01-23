@@ -1,9 +1,9 @@
-import { VM, ConstantPool, Stack, EveValue, Register, VMMethodArgs } from './types'
+import { VM, ConstantPool, Stack, EveValue, Register, VMMethodArgs } from '../types'
 import { VMDriver } from './VMDriver'
-import { EveString } from './EveString'
-import { EveInteger } from './EveInteger'
-import { EveNull } from './EveNull'
-import { RegistryKey } from './RegistryKey'
+import { EveString } from '../data-types/EveString'
+import { EveInteger } from '../data-types/EveInteger'
+import { EveNull } from '../data-types/EveNull'
+import { RegistryKey } from '../RegistryKey'
 import { EveVMDriver } from './EveVMDriver'
 
 const eveNull = new EveNull()

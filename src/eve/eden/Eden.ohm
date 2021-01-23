@@ -1,0 +1,14 @@
+Eden {
+  expr = //compound
+             | atom
+             | nothing
+
+  // compound = mul_exp
+  // mul_exp = mul_exp '*' add_exp
+  // add_exp = add_exp '+' add_exp
+
+  atom = number
+  number = integerLiteral
+  integerLiteral = digit+
+  nothing = ~any
+}

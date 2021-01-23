@@ -1,5 +1,5 @@
 import { EveVMDriver } from './EveVMDriver'
-import { VM } from './types'
+import { VM } from '../types'
 
 describe('eve vm driver', () => {
   it('throws on missing program', () => {

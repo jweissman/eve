@@ -1,4 +1,4 @@
-import { Program } from './types'
+import { Program } from '../types'
 
 
 export abstract class VMDriver {
