@@ -1,4 +1,5 @@
-import { ASTNodeKind } from './ASTNodeKind';
+import { ASTNodeKind } from './ASTNodeKind'
+import { BinaryOperator } from './BinaryOperator';
 
 export type ASTNode = {
   id?: string;
@@ -6,4 +7,5 @@ export type ASTNode = {
   children?: ASTNode[];
   comment?: string;
   numericValue?: number;
+  operator?: BinaryOperator;
 };

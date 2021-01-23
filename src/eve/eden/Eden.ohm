@@ -1,11 +1,21 @@
 Eden {
-  expr = //compound
-             | atom
-             | nothing
+  expression = compound | nothing
 
-  // compound = mul_exp
-  // mul_exp = mul_exp '*' add_exp
-  // add_exp = add_exp '+' add_exp
+  compound = additiveExpression
+
+  addition = additiveExpression "+" multiplicativeExpression
+           | additiveExpression "-" multiplicativeExpression
+
+  additiveExpression = addition 
+                     | multiplicativeExpression
+
+  multiplication = multiplicativeExpression "*" primitiveExpression
+                 | multiplicativeExpression "/" primitiveExpression
+
+  multiplicativeExpression = multiplication
+                           | primitiveExpression
+
+  primitiveExpression = atom
 
   atom = number
   number = integerLiteral

@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig-base.json",
   "compilerOptions": {
+    "target": "es2019",
     "allowUnreachableCode": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,

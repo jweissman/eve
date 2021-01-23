@@ -1,5 +1,5 @@
-import { ASTNode } from './ASTNode';
+import { ASTNode } from './ASTNode'
 
 export interface Parser {
-  parse(input: string): ASTNode;
+  parse(input: string): ASTNode
 }

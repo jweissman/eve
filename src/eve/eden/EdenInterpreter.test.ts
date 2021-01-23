@@ -1,3 +1,4 @@
+import { BinaryOperator } from './BinaryOperator'
 import { EdenInterpreter } from './EdenInterpreter'
 
 describe('eden interpreter', () => {
@@ -15,14 +16,20 @@ describe('eden interpreter', () => {
       expect(parser.parse('2')).toEqual({ kind: 'integerLiteral', numericValue: 2 })
     })
 
-    test.todo('parses simple sums')
+    it('parses simple sums', () => {
+      expect(parser.parse('0+1')).toEqual(
+        {
+          kind: 'binaryExpression', operator: BinaryOperator.Add, children: [
+            { kind: 'integerLiteral', numericValue: 0 },
+            { kind: 'integerLiteral', numericValue: 1 }
+          ]
+        }
+      )
+    })
   })
 
-  test.todo('interprets eden code')
-  // , () => {
-  // expect(parser.parse)
-  // expect(interpreter.evaluate("2+2")).toEqual(4)
-  // expect(interpreter.evaluate("print('hello')"))
-  // })
+  it('interprets eden code', () => {
+    expect(interpreter.evaluate('2+2')).toEqual(4)
+  })
 
 })

@@ -1,23 +1,9 @@
 import { Eve } from './Eve'
-import { Instruction } from './vm/types'
 import { EveString } from './vm/data-types/EveString'
 import { EveInteger } from './vm/data-types/EveInteger'
 import { Opcode } from './vm/Opcode'
 import { RegistryKey } from './vm/RegistryKey'
-
-// build an instruction
-const inst =
-  (opcode: Opcode, operandOne?: number): Instruction => {
-    return { opcode, operandOne }
-  }
-
-const label = (labelName: string): Instruction => {
-  return { opcode: Opcode.NOOP, label: labelName }
-}
-
-const goto = (labelName: string): Instruction => {
-  return { opcode: Opcode.GOTO, targetLabel: labelName }
-}
+import { inst, label, goto } from './vm/InstructionHelpers'
 
 describe(Eve, () => {
   const driver = new Eve()

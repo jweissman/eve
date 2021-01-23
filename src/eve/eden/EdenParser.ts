@@ -3,9 +3,9 @@ import { ASTNode } from './ASTNode'
 import { ASTNodeKind } from './ASTNodeKind'
 import { edenGrammar } from './EdenGrammar'
 import { edenSemantics } from './EdenSemantics'
+import { Parser } from './Parser'
 
-export class EdenParser {
-  // edenSemantics: EdenSemantics = new EdenSemantics(edenGrammar)
+export class EdenParser implements Parser {
   parse(input: string): ASTNode {
     const match: MatchResult = edenGrammar.match(input)
     if (match.failed()) {
@@ -17,8 +17,8 @@ export class EdenParser {
       return empty
     } else {
       const semantics = edenSemantics(match)
-      console.log(semantics.inspect())
-      return semantics.tree()
+      const ast = semantics.tree()
+      return ast
     }
   }
 }
