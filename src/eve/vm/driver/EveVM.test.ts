@@ -8,15 +8,100 @@ describe(EveVM, () => {
     vm = new EveVM()
   })
 
-  it('can add integers', () => {
-    vm.load_const_one()
-    vm.load_const_one()
-    vm.add_integers()
-    expect(vm.stack[vm.stack.length-1].js).toEqual(2)
+  it('is okay to noop sometimes', () => expect(() => vm.noop()).not.toThrow())
+
+  describe('int math', () => {
+    it('can add integers', () => {
+      vm.load_const_one()
+      vm.load_const_one()
+      vm.iadd()
+      expect(vm.top.js).toEqual(2)
+
+      vm.load_const_one()
+      vm.load_const_two()
+      vm.iadd()
+      expect(vm.top.js).toEqual(3)
+
+      vm.load_const_two()
+      vm.load_const_two()
+      vm.iadd()
+      expect(vm.top.js).toEqual(4)
+
+      vm.load_const_zero()
+      vm.load_const_two()
+      vm.iadd()
+      expect(vm.top.js).toEqual(2)
+    })
+
+    it('can subtract integers', () => {
+      vm.load_const_one()
+      vm.load_const_one()
+      vm.isub()
+      expect(vm.top.js).toEqual(0)
+
+      vm.load_const_two()
+      vm.load_const_one()
+      vm.isub()
+      expect(vm.top.js).toEqual(1)
+
+      vm.load_const_two()
+      vm.load_const_two()
+      vm.isub()
+      expect(vm.top.js).toEqual(0)
+
+      vm.load_const_zero()
+      vm.load_const_two()
+      vm.isub()
+      expect(vm.top.js).toEqual(-2)
+    })
+
+    it('can multiply integers', () => {
+      vm.load_const_one()
+      vm.load_const_one()
+      vm.imul()
+      expect(vm.top.js).toEqual(1)
+
+      vm.load_const_two()
+      vm.load_const_one()
+      vm.imul()
+      expect(vm.top.js).toEqual(2)
+
+      vm.load_const_two()
+      vm.load_const_two()
+      vm.imul()
+      expect(vm.top.js).toEqual(4)
+
+      vm.load_const_zero()
+      vm.load_const_two()
+      vm.imul()
+      expect(vm.top.js).toEqual(0)
+    })
+
+    it('can divide integers', () => {
+      vm.load_const_one()
+      vm.load_const_one()
+      vm.idiv()
+      expect(vm.top.js).toEqual(1)
+
+      vm.load_const_two()
+      vm.load_const_one()
+      vm.idiv()
+      expect(vm.top.js).toEqual(2)
+
+      vm.load_const_two()
+      vm.load_const_two()
+      vm.idiv()
+      expect(vm.top.js).toEqual(1)
+
+      vm.load_const_zero()
+      vm.load_const_two()
+      vm.idiv()
+      expect(vm.top.js).toEqual(0)
+    })
   })
 
   it('can join strings', () => {
-    vm.constantPool = [ new EveString('hi'), new EveString(' '), new EveString('there')]
+    vm.constantPool = [new EveString('hi'), new EveString(' '), new EveString('there')]
     vm.load_const_by_index({ operandOne: 0 })
     vm.load_const_by_index({ operandOne: 1 })
     vm.load_const_by_index({ operandOne: 2 })
@@ -33,7 +118,10 @@ describe(EveVM, () => {
 
   describe('error conditions', () => {
     it('throws on data type mismatch', () => {
-      expect(() => vm.add_integers()).toThrow()
+      expect(() => vm.iadd()).toThrow()
+      expect(() => vm.imul()).toThrow()
+      expect(() => vm.isub()).toThrow()
+      expect(() => vm.idiv()).toThrow()
       expect(() => vm.join_strings()).toThrow()
     })
 

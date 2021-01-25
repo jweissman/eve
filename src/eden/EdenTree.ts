@@ -13,4 +13,9 @@ export class EdenTree extends SemanticOperation {
     children: [left.tree(), right.tree()],
     operator: op.primitiveValue,
   })
+  multiplication: Action = (left: Node, op: Node, right: Node) => ({
+    kind: ASTNodeKind.BinaryExpression,
+    children: [left.tree(), right.tree()],
+    operator: op.primitiveValue,
+  })
 }

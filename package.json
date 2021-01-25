@@ -27,6 +27,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
+    "chalk": "^4.1.0",
     "ohm-js": "^15.4.1"
   }
 }

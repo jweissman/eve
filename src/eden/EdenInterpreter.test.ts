@@ -4,6 +4,10 @@ import { EdenInterpreter } from './EdenInterpreter'
 describe('eden interpreter', () => {
   const interpreter = new EdenInterpreter()
   const { parser } = interpreter
+  beforeEach(() => {
+    const debug = false
+    interpreter.config = { debug }
+  })
 
   describe('parsing eden code', () => {
     it('parses the empty program', () => {
@@ -26,10 +30,44 @@ describe('eden interpreter', () => {
         }
       )
     })
+
+    it('parses simple differences', () => {
+      expect(parser.parse('0-1')).toEqual(
+        {
+          kind: 'binaryExpression', operator: BinaryOperator.Subtract, children: [
+            { kind: 'integerLiteral', numericValue: 0 },
+            { kind: 'integerLiteral', numericValue: 1 }
+          ]
+        }
+      )
+    })
+
+    it('parses simple multiplications', () => {
+      expect(parser.parse('0*1')).toEqual(
+        {
+          kind: 'binaryExpression', operator: BinaryOperator.Multiply, children: [
+            { kind: 'integerLiteral', numericValue: 0 },
+            { kind: 'integerLiteral', numericValue: 1 }
+          ]
+        }
+      )
+    })
   })
 
-  it('interprets eden code', () => {
-    expect(interpreter.evaluate('2+2')).toEqual(4)
+  describe('interprets eden code', () => {
+    it('add/subtract', () => {
+      expect(interpreter.evaluate('2+2')).toEqual(4)
+      expect(interpreter.evaluate('2+3')).toEqual(5)
+      expect(interpreter.evaluate('2-2')).toEqual(0)
+      expect(interpreter.evaluate('2-3')).toEqual(-1)
+    })
+
+    it('multiply/divide', () => {
+      expect(interpreter.evaluate('2*2')).toEqual(4)
+      expect(interpreter.evaluate('2*3')).toEqual(6)
+      expect(interpreter.evaluate('2/2')).toEqual(1)
+      expect(interpreter.evaluate('2/3')).toEqual(2/3)
+    })
   })
 
 })

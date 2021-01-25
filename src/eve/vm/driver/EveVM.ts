@@ -11,6 +11,10 @@ const eveZero = new EveInteger(0)
 const eveOne = new EveInteger(1)
 const eveTwo = new EveInteger(2)
 
+// other useful int constants
+// const eveTen = new EveInteger(10)
+// const eveNegativeOne = new EveInteger(-1)
+
 class EveVM implements VM {
   private constants: ConstantPool = []
   private isHalted = false
@@ -51,16 +55,21 @@ class EveVM implements VM {
     return this.push(theConst)
   }
 
-  add_integers = (): void => {
+  iadd = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js + b.js));
+  isub = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js - b.js));
+  imul = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js * b.js));
+  idiv = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js / b.js));
+
+  private integerBinaryOp = (operation: (top: EveInteger, second: EveInteger) => EveInteger): void => {
     const { top, second } = this
     if (!(top instanceof EveInteger && second instanceof EveInteger)) {
-      throw new Error('Integer Addition Error -- one of top two values not eve int')
+      throw new Error('Integer operation error -- one of top two values not eve int')
     }
-    const jsResult = top.js + second.js
-    const eveResult = new EveInteger(jsResult)
+    const result = operation(second, top)
+    // const eveResult = new EveInteger(jsResult)
     this.pop_two()
-    this.push(eveResult)
-  };
+    this.push(result)
+  }
 
   join_strings = (): void => {
     const {top, second} = this
@@ -122,8 +131,8 @@ class EveVM implements VM {
   goto = (): void => { throw new Error('goto not actually valid (note: should get optimized into unconditional jumps)')}
 
   private push(value: EveValue) { this.stack.push(value) }
-  private get top()  { return this.stack[this.stack.length-1] }
-  private get second()  { return this.stack[this.stack.length-2] }
+  get top(): EveValue  { return this.stack[this.stack.length-1] || eveNull }
+  get second(): EveValue  { return this.stack[this.stack.length-2] || eveNull }
 }
 
 export { EveVM }

@@ -36,11 +36,13 @@ type Register = { [key in RegistryKey]: EveValue }
 type ConstantPool = EveValue[]
 
 type VM = VMKernel & {
-  constantPool: ConstantPool,
-  stack: Stack,
-  readonly driver: VMDriver,
-  readonly registry: Register,
-  readonly halted: boolean,
+  constantPool: ConstantPool
+  stack: Stack
+  readonly driver: VMDriver
+  readonly registry: Register
+  readonly halted: boolean
+  readonly top: EveValue
+  readonly second: EveValue
 }
 
 export { 

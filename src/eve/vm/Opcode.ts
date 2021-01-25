@@ -9,6 +9,9 @@ export enum Opcode {
   LCONST_IDX = 0x20,
 
   INT_ADD = 0xa1,
+  INT_SUB = 0xa2,
+  INT_MUL = 0xa3,
+  INT_DIV = 0xa4,
 
   STR_JOIN = 0xb1,
 
