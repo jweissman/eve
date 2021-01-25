@@ -1,12 +1,8 @@
 import { VM, Program } from '../types'
-import { VMDriver } from './VMDriver'
-import { Executor } from '../Executor'
 import { Opcode } from '../Opcode'
-
-type FlightRecording = {
-  instructionsPerformed: number,
-  timeElapsed: number
-}
+import { Executor } from '../Executor'
+import { VMDriver } from './VMDriver'
+import { FlightRecording } from './FlightRecording'
 
 export class EveVMDriver extends VMDriver {
   private programLibrary: { [key: string]: Program; } = { _main: [] };

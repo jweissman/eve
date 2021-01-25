@@ -31,6 +31,7 @@ Eden {
   parentheticalExpression = "(" expression ")"
 
   atom = number
+       // todo: identifier, string, symbol
   number = integerLiteral
   integerLiteral = digit+
   nothing = ~any

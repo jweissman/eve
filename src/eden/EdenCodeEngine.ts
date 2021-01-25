@@ -15,9 +15,7 @@ export class EdenCodeEngine implements CodeEngine {
 
   integerLiteral = ({ numericValue }: { numericValue?: number; }) => ([
     ...(numericValue ? [
-      inst(
-        Opcode.LCONST_IDX, this.constants.push(new EveInteger(numericValue)) - 1
-      )
+      this.loadIntegerConstant(numericValue)
     ] : [])
   ]);
 
@@ -43,5 +41,28 @@ export class EdenCodeEngine implements CodeEngine {
 
   private codegen(node: ASTNode): Instruction[] {
     return this[node.kind](node)
+  }
+
+  private loadIntegerConstant(value: number) {
+    if (value === 0) {
+      return inst(Opcode.LCONST_ZERO)
+    } else if (value === 1) {
+      return inst(Opcode.LCONST_ONE)
+    } else if (value === 2) {
+      return inst(Opcode.LCONST_TWO)
+    }
+
+    return inst(
+      Opcode.LCONST_IDX, this.findOrCreateIntegerConstant(value)
+    )
+  }
+
+  private findOrCreateIntegerConstant(value: number): number {
+    const exists = this.constants.find(c => c instanceof EveInteger && c.js === value)
+    if (exists) {
+      return this.constants.indexOf(exists)
+    } else {
+      return this.constants.push(new EveInteger(value)) - 1
+    }
   }
 }
