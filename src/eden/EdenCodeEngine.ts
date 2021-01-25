@@ -35,6 +35,8 @@ export class EdenCodeEngine implements CodeEngine {
     case BinaryOperator.Subtract: return Opcode.INT_SUB
     case BinaryOperator.Multiply: return Opcode.INT_MUL
     case BinaryOperator.Divide: return Opcode.INT_DIV
+    case BinaryOperator.Power: return Opcode.INT_POW
+    case BinaryOperator.Modulus: return Opcode.INT_MOD
     default: assertNever(binaryOperator)
     }
   }

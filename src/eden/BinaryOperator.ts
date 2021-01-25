@@ -3,4 +3,6 @@ export enum BinaryOperator {
   Subtract = '-',
   Multiply = '*',
   Divide = '/',
+  Power = '**',
+  Modulus = '%',
 }

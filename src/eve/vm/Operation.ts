@@ -8,6 +8,8 @@ export enum Operation {
   IntegerSubtract = 'isub',
   IntegerDivide = 'idiv',
   IntegerMultiply = 'imul',
+  IntegerExponentiate = 'ipow',
+  IntegerModulo = 'imod',
   StringJoin = 'join_strings',
   LoadFromStore = 'load_from_store',
   AddToStore = 'add_to_store',

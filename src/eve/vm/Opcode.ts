@@ -12,6 +12,8 @@ export enum Opcode {
   INT_SUB = 0xa2,
   INT_MUL = 0xa3,
   INT_DIV = 0xa4,
+  INT_POW = 0xa5,
+  INT_MOD = 0xa6,
 
   STR_JOIN = 0xb1,
 

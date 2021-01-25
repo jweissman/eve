@@ -9,6 +9,8 @@ const instructionTable: InstructionTable = {
   [Opcode.INT_SUB]: Operation.IntegerSubtract,
   [Opcode.INT_MUL]: Operation.IntegerMultiply,
   [Opcode.INT_DIV]: Operation.IntegerDivide,
+  [Opcode.INT_POW]: Operation.IntegerExponentiate,
+  [Opcode.INT_MOD]: Operation.IntegerModulo,
   [Opcode.JUMP]: Operation.Jump,
   [Opcode.JUMP_Z]: Operation.JumpIfZero,
   [Opcode.LCONST_IDX]: Operation.LoadConstantByIndex,

@@ -1,21 +1,34 @@
 Eden {
   expression = compound | nothing
 
-  compound = additiveExpression
+  compound = arithmeticExpression
 
-  addition = additiveExpression "+" multiplicativeExpression
-           | additiveExpression "-" multiplicativeExpression
+  arithmeticExpression = additiveExpression
+                      //  | multiplication
+                      //  | primitiveExpression
 
   additiveExpression = addition 
                      | multiplicativeExpression
 
-  multiplication = multiplicativeExpression "*" primitiveExpression
-                 | multiplicativeExpression "/" primitiveExpression
+  addition = additiveExpression "+" multiplicativeExpression
+           | additiveExpression "-" multiplicativeExpression
 
   multiplicativeExpression = multiplication
-                           | primitiveExpression
+                           | exponentialExpression
 
-  primitiveExpression = atom
+  multiplication = multiplicativeExpression "*" exponentialExpression
+                 | multiplicativeExpression "/" exponentialExpression
+                 | multiplicativeExpression "%" exponentialExpression
+
+  exponentialExpression = exponentiation
+                        | primitiveExpression
+  
+  exponentiation = exponentialExpression "**" primitiveExpression
+
+  primitiveExpression = parentheticalExpression
+                      | atom
+  
+  parentheticalExpression = "(" expression ")"
 
   atom = number
   number = integerLiteral

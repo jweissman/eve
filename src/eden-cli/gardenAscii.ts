@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import chalk from 'chalk'
 
 
 export function gardenAscii(): string {
@@ -25,5 +25,5 @@ export function gardenAscii(): string {
 
                                   * . ' 
           ~ . ~
-`;
+`
 }

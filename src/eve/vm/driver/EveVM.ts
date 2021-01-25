@@ -55,10 +55,13 @@ class EveVM implements VM {
     return this.push(theConst)
   }
 
-  iadd = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js + b.js));
-  isub = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js - b.js));
-  imul = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js * b.js));
-  idiv = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js / b.js));
+  iadd = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js + b.js))
+
+  isub = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js - b.js))
+  imul = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js * b.js))
+  idiv = (): void => this.integerBinaryOp((a, b) => new EveInteger(a.js / b.js))
+  ipow = (): void => this.integerBinaryOp((a, b) => new EveInteger(Math.pow(a.js, b.js)))
+  imod = (): void => this.integerBinaryOp((a, b) => new EveInteger(((a.js % b.js ) + b.js ) % b.js))
 
   private integerBinaryOp = (operation: (top: EveInteger, second: EveInteger) => EveInteger): void => {
     const { top, second } = this
