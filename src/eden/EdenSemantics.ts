@@ -1,4 +1,3 @@
-// import { ASTNode } from './ASTNode'
 import { edenGrammar } from './EdenGrammar'
 import { EdenInspector } from './EdenInspector'
 import { EdenTree } from './EdenTree'

@@ -11,6 +11,7 @@ export class EdenParser implements Parser {
     if (match.failed()) {
       const empty: ASTNode = {
         id: 'mu',
+        children: [],
         kind: ASTNodeKind.Nothing,
         comment: 'EdenParser: match failed at ' + match.message
       }

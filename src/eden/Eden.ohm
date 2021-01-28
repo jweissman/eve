@@ -1,38 +1,47 @@
 Eden {
-  expression = compound | nothing
+  Expression
+    = AssignmentExpression
+    | ArithmeticExpression
+    | Nothing
 
-  compound = arithmeticExpression
+  AssignmentExpression = Identifier Equals Expression
+  Equals = "="
 
-  arithmeticExpression = additiveExpression
+  ArithmeticExpression = AdditiveExpression
                       //  | multiplication
                       //  | primitiveExpression
 
-  additiveExpression = addition 
-                     | multiplicativeExpression
+  AdditiveExpression = Addition 
+                     | MultiplicativeExpression
 
-  addition = additiveExpression "+" multiplicativeExpression
-           | additiveExpression "-" multiplicativeExpression
+  Addition = AdditiveExpression "+" MultiplicativeExpression
+           | AdditiveExpression "-" MultiplicativeExpression
 
-  multiplicativeExpression = multiplication
-                           | exponentialExpression
+  MultiplicativeExpression = Multiplication
+                           | ExponentialExpression
 
-  multiplication = multiplicativeExpression "*" exponentialExpression
-                 | multiplicativeExpression "/" exponentialExpression
-                 | multiplicativeExpression "%" exponentialExpression
+  Multiplication = MultiplicativeExpression "*" ExponentialExpression
+                 | MultiplicativeExpression "/" ExponentialExpression
+                 | MultiplicativeExpression "%" ExponentialExpression
 
-  exponentialExpression = exponentiation
-                        | primitiveExpression
+  ExponentialExpression = Exponentiation
+                        | PrimitiveExpression
   
-  exponentiation = exponentialExpression "**" primitiveExpression
+  Exponentiation = ExponentialExpression "**" PrimitiveExpression
 
-  primitiveExpression = parentheticalExpression
-                      | atom
+  PrimitiveExpression = ParentheticalExpression
+                      | Atom
   
-  parentheticalExpression = "(" expression ")"
+  ParentheticalExpression = "(" Expression ")"
 
-  atom = number
+  Atom = IntegerLiteral
+       | Identifier
        // todo: identifier, string, symbol
-  number = integerLiteral
-  integerLiteral = digit+
-  nothing = ~any
+  Identifier
+    = letter+
+  
+  IntegerLiteral
+    = number
+  number = digit+
+  Nothing = ~any
 }

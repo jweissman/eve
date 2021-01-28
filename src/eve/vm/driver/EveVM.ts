@@ -26,6 +26,9 @@ class EveVM implements VM {
     [RegistryKey.B]: eveNull,
     [RegistryKey.C]: eveNull,
     [RegistryKey.D]: eveNull,
+    [RegistryKey.E]: eveNull,
+    [RegistryKey.F]: eveNull,
+    [RegistryKey.G]: eveNull,
   }
 
   get halted(): boolean { return this.isHalted }

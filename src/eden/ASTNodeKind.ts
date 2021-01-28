@@ -6,12 +6,14 @@ export enum ASTNodeKind {
   // Atom = 'atom',
   // Compound = 'compound',
   // Organism = 'organism',
-
   // atoms
   IntLit = 'integerLiteral',
 
   // compounds
   // AddExp = 'additionExpression',
   // Funcall = 'functionCall',
-  BinaryExpression = 'binaryExpression'
+  BinaryExpression = 'binaryExpression',
+
+  Identifier = 'identifier',
+  Assignment = 'assignment'
 }

@@ -11,17 +11,25 @@ const binaryExpr = (left: Node, operator: Node, right: Node) => ({
 })
 
 export class EdenTree extends SemanticOperation {
-  nothing: Action = () => ({ kind: ASTNodeKind.Nothing })
-  integerLiteral: Action = (digits: Node) => ({
+  Nothing = () => ({ kind: ASTNodeKind.Nothing })
+  Identifier = (letters: Node) => ({
+    kind: ASTNodeKind.Identifier,
+    name: String(letters.sourceString)
+  })
+  IntegerLiteral = (digits: Node) => ({
     kind: ASTNodeKind.IntLit,
     numericValue: Number(digits.sourceString)
   })
-  addition: Action = (left: Node, op: Node, right: Node) =>
+  Addition: Action = (left: Node, op: Node, right: Node) =>
     binaryExpr(left, op, right)
-  multiplication: Action = (left: Node, op: Node, right: Node) =>
+  Multiplication: Action = (left: Node, op: Node, right: Node) =>
     binaryExpr(left, op, right)
-  exponentiation: Action = (left: Node, op: Node, right: Node) =>
+  Exponentiation: Action = (left: Node, op: Node, right: Node) =>
     binaryExpr(left, op, right)
-  parentheticalExpression: Action = (_leftParens: Node, expr: Node, _rightParens: Node) =>
+  ParentheticalExpression: Action = (_leftParens: Node, expr: Node, _rightParens: Node) =>
     expr.tree()
+  AssignmentExpression: Action = (left: Node, _eq: Node, right: Node) => ({
+    kind: ASTNodeKind.Assignment,
+    children: [ left.tree(), right.tree() ]
+  })
 }

@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import { Eve } from '../eve/Eve'
 import { Instruction, JSValue } from '../eve/vm/types'
 import { ASTNode } from './ASTNode'
+import { ASTNodeKind } from './ASTNodeKind'
 import { EdenCodeEngine } from './EdenCodeEngine'
 import { EdenParser } from './EdenParser'
 import { EdenTreeInspector } from './EdenTreeInspector'
@@ -19,12 +20,19 @@ export class EdenInterpreter implements Interpreter {
   evaluate(_input: string): JSValue {
     const ast = this.parser.parse(_input)
     if (this.config.debug) {
-      console.log(chalk.blue(this.prettyPrint(ast)))
+      const prettyAst = chalk.blue(this.prettyPrint(ast))
+      console.log(prettyAst)
     }
-    const code = this.interpret(ast)
-    const eve = new Eve()
-    eve.vm.constantPool = this.engine.constants
-    return eve.execute(code).js
+    if (ast.kind === ASTNodeKind.Nothing) {
+      // we probably got a parse error
+      console.warn(ast.comment)
+      return null
+    } else {
+      const code = this.interpret(ast)
+      const eve = new Eve()
+      eve.vm.constantPool = this.engine.constants
+      return eve.execute(code).js
+    }
   }
 
   private interpret(ast: ASTNode): Instruction[] {

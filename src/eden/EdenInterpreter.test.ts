@@ -42,8 +42,17 @@ describe('eden interpreter', () => {
       })
     })
 
+    it('handles spaces', () => {
+      expect(interpreter.evaluate('4 + 3')).toEqual(7)
+    })
+
     describe('variables with integer values', () => {
-      test.todo('assign a value to a local variable')
+      xit('assign a value to a local variable', () => {
+        expect(interpreter.evaluate('a = 4')).toEqual(4)
+        expect(interpreter.evaluate('a + 5')).toEqual(9)
+        expect(interpreter.evaluate('a * a')).toEqual(16)
+        expect(interpreter.evaluate('10 ** a')).toEqual(10000)
+      })
     })
 
     test.todo('conditionals and booleans')
