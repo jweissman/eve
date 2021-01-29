@@ -1,10 +1,19 @@
 Eden {
+  Stmt = Expression
+
   Expression
+    = CompoundExpression
+    | SimpleExpression
+    
+  SimpleExpression
     = AssignmentExpression
     | ArithmeticExpression
     | Nothing
 
-  AssignmentExpression = Identifier Equals Expression
+  CompoundExpression = NonemptyListOf<Stmt, sep+>
+  sep = ";" | "\n" | "\r"
+
+  AssignmentExpression = Identifier Equals SimpleExpression
   Equals = "="
 
   ArithmeticExpression = AdditiveExpression
@@ -38,7 +47,8 @@ Eden {
        | Identifier
        // todo: identifier, string, symbol
   Identifier
-    = letter+
+    = id
+  id = letter+
   
   IntegerLiteral
     = number

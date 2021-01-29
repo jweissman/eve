@@ -6,6 +6,8 @@ import { TreeInspector } from './types'
 // tree pretty printer
 export class EdenTreeInspector implements TreeInspector {
   emptyProgram = () => '( _mu_ )';
+  program = ({ children }: { children: ASTNode[]}) =>
+    children.map(child => this.inspect(child)).join(';\n')
 
   integerLiteral = ({ numericValue }: { numericValue?: number; }) => String(numericValue);
 

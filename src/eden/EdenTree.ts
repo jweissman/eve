@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// import util from 'util'
 import { Node, Action } from 'ohm-js'
 import { ASTNodeKind } from './ASTNodeKind'
 import { SemanticOperation } from './SemanticOperation'
+// import { EdenTreeInspector } from './EdenTreeInspector'
+// import { TreeInspector } from './types'
+// const prettyPrinter: TreeInspector = new EdenTreeInspector()
 
 const binaryExpr = (left: Node, operator: Node, right: Node) => ({
   kind: ASTNodeKind.BinaryExpression,
@@ -32,4 +36,5 @@ export class EdenTree extends SemanticOperation {
     kind: ASTNodeKind.Assignment,
     children: [ left.tree(), right.tree() ]
   })
+  CompoundExpression: Action = (list: Node) => ({ kind: 'program', children: list.asIteration().tree() })
 }

@@ -3,5 +3,6 @@ export enum ASTNodeKind {
   IntLit = 'integerLiteral',
   BinaryExpression = 'binaryExpression',
   Identifier = 'identifier',
-  Assignment = 'assignment'
+  Assignment = 'assignment',
+  Program = 'program'
 }

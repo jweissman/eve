@@ -27,6 +27,8 @@ export class EdenCodeEngine implements CodeEngine {
   public identifiers: { [key: string]: RegistryKey } = {}
 
   emptyProgram = () => [];
+  program = ({ children }: { children: ASTNode[]}) =>
+    children.map(child => this.codegen(child)).flat()
 
   integerLiteral = (intLit: ASTNode) => (
     isIntLit(intLit) ? [
@@ -49,10 +51,11 @@ export class EdenCodeEngine implements CodeEngine {
 
   // ...except for assignments, where we want to store the values to locals
   assignment = ({ children }: { children: ASTNode[]}) => {
-    const [ left, right ] = children
+    const [ left, right ]: ASTNode[] = children
     if (!isIdentifier(left)) {
       throw new Error('cannot construct assignment with a non-identifier lhs?')
     }
+    console.log(`[CodeEngine] assignment: ${JSON.stringify(left)} = ${JSON.stringify(right)}`)
     return [
       ...this.codegen(right),
       inst(Opcode.ASTORE, this.findOrCreateRegisterForIdentifier(left.name)),

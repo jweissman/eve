@@ -93,7 +93,9 @@ class EveVM implements VM {
     if (!instruction) { throw new Error('no instruction')}
     const { operandOne: register } = instruction
     if (register === undefined) { throw new Error('Load from store failed, key undefined') }
-    if (!(register in RegistryKey)) { throw new Error('Invalid register: ' + register) }
+    if (!(register in RegistryKey)) {
+      console.warn('Unnamed register used ' + register)
+    }
     const storedValue = this.registry[String(register)]
     // console.log('[VM] STORE = ' + util.inspect(this.registry))
     // console.log('[VM] READ FROM STORE: ' + register + ' => ' + storedValue.js)
@@ -104,7 +106,9 @@ class EveVM implements VM {
     if (!instruction) { throw new Error('no instruction')}
     const { operandOne: register } = instruction
     if (register === undefined) { throw new Error('Add to Store: key undefined') }
-    if (!(register in RegistryKey)) { throw new Error('Invalid register: ' + register) }
+    if (!(register in RegistryKey)) {
+      console.warn('Unnamed register used ' + register)
+    }
     const value = this.top
     // console.log('[VM] ADD TO STORE: ' + register + ' <= ' + value.js)
     this.registry[String(register)] = value

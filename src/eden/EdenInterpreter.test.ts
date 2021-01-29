@@ -9,6 +9,12 @@ describe('eden interpreter', () => {
     interpreter.config = { debug }
   })
 
+  describe('basics', () => {
+    it.only('multiple lines', () => {
+      expect(interpreter.evaluate('a=2;b=3;a+b')).toEqual(5)
+    })
+  })
+
   describe('interprets basic eden code', () => {
     describe('core integer math operations', () => {
       it('add/subtract', () => {
