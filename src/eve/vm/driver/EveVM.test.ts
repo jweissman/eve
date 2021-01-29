@@ -116,6 +116,15 @@ describe(EveVM, () => {
     expect(vm.stack[vm.stack.length-1].js).toEqual('hello')
   })
 
+  it('stores/loads from registers', () => {
+    vm.constantPool = [ new EveString('hi') ]
+    // vm.registry = { [RegisterKey.A]: new EveString('hi') }
+    vm.load_const_by_index({ operandOne: 0 })
+    vm.add_to_store({ operandOne: 0 })
+    vm.load_from_store({ operandOne: 0 })
+    expect(vm.top.js).toEqual('hi')
+  })
+
   describe('error conditions', () => {
     it('throws on data type mismatch', () => {
       expect(() => vm.iadd()).toThrow()

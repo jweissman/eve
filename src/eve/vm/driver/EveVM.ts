@@ -1,3 +1,4 @@
+// import util from 'util'
 import { VM, ConstantPool, Stack, EveValue, Register, VMMethodArgs } from '../types'
 import { VMDriver } from './VMDriver'
 import { EveString } from '../data-types/EveString'
@@ -93,7 +94,9 @@ class EveVM implements VM {
     const { operandOne: register } = instruction
     if (register === undefined) { throw new Error('Load from store failed, key undefined') }
     if (!(register in RegistryKey)) { throw new Error('Invalid register: ' + register) }
-    const storedValue = this.registry[register]
+    const storedValue = this.registry[String(register)]
+    // console.log('[VM] STORE = ' + util.inspect(this.registry))
+    // console.log('[VM] READ FROM STORE: ' + register + ' => ' + storedValue.js)
     this.push(storedValue)
   }
 
@@ -102,7 +105,11 @@ class EveVM implements VM {
     const { operandOne: register } = instruction
     if (register === undefined) { throw new Error('Add to Store: key undefined') }
     if (!(register in RegistryKey)) { throw new Error('Invalid register: ' + register) }
-    this.registry[register] = this.top
+    const value = this.top
+    // console.log('[VM] ADD TO STORE: ' + register + ' <= ' + value.js)
+    this.registry[String(register)] = value
+    // console.log('[VM] STORE AFTER: ' + util.inspect(this.registry))
+    this.pop()
   }
 
   pop = (): void => { this.stack.pop() }

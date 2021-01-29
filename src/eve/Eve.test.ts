@@ -102,7 +102,7 @@ describe(Eve, () => {
   it('goto label', () => {
     driver.vm.constantPool = [
       new EveInteger(-1),
-      new EveInteger(10000)
+      new EveInteger(10)
     ]
     const result = driver.execute([
       inst(Opcode.LCONST_IDX, 1), 

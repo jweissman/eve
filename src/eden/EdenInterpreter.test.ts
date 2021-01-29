@@ -1,9 +1,10 @@
 import { EdenInterpreter } from './EdenInterpreter'
 
 describe('eden interpreter', () => {
-  const interpreter = new EdenInterpreter()
+  let interpreter: EdenInterpreter
 
   beforeEach(() => {
+    interpreter = new EdenInterpreter()
     const debug = false
     interpreter.config = { debug }
   })
@@ -47,8 +48,8 @@ describe('eden interpreter', () => {
     })
 
     describe('variables with integer values', () => {
-      xit('assign a value to a local variable', () => {
-        expect(interpreter.evaluate('a = 4')).toEqual(4)
+      it('assign a value to a local variable', () => {
+        expect(interpreter.evaluate('a = 4')).toEqual(null)
         expect(interpreter.evaluate('a + 5')).toEqual(9)
         expect(interpreter.evaluate('a * a')).toEqual(16)
         expect(interpreter.evaluate('10 ** a')).toEqual(10000)
@@ -56,5 +57,7 @@ describe('eden interpreter', () => {
     })
 
     test.todo('conditionals and booleans')
+    test.todo('funcalls')
+    test.todo('custom operators / mixfix')
   })
 })

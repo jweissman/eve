@@ -5,7 +5,7 @@ import { inst } from '../eve/vm/InstructionHelpers'
 import { Opcode } from '../eve/vm/Opcode'
 import { RegistryKey } from '../eve/vm/RegistryKey'
 import { ConstantPool, Instruction } from '../eve/vm/types'
-import { ASTNode } from './ASTNode'
+import { ASTNode, isIdentifier, isIntLit } from './ASTNode'
 import { BinaryOperator } from './BinaryOperator'
 import { CodeEngine } from './types'
 
@@ -21,17 +21,18 @@ const binaryOperation = (binaryOperator: BinaryOperator): Opcode => {
   }
 }
 
-// bytecode generator
+// vm bytecode generator
 export class EdenCodeEngine implements CodeEngine {
   public constants: ConstantPool = [];
-  public locals: { [key: string]: RegistryKey } = {}
+  public identifiers: { [key: string]: RegistryKey } = {}
+
   emptyProgram = () => [];
 
-  integerLiteral = ({ numericValue }: { numericValue?: number; }) => ([
-    ...(numericValue ? [
-      this.loadIntegerConstant(numericValue)
-    ] : [])
-  ]);
+  integerLiteral = (intLit: ASTNode) => (
+    isIntLit(intLit) ? [
+      this.loadIntegerConstant(intLit.numericValue)
+    ] : []
+  );
 
   binaryExpression = ({ operator, children }: {
     operator?: BinaryOperator;
@@ -42,10 +43,21 @@ export class EdenCodeEngine implements CodeEngine {
   ] : [];
 
   // in general we want to load ids from local vars
-  identifier = () => []
+  identifier = (id: ASTNode) => isIdentifier(id) ? [
+    inst(Opcode.LSTORE, this.findOrCreateRegisterForIdentifier(id.name))
+  ] : []
 
   // ...except for assignments, where we want to store the values to locals
-  assignment = () => []
+  assignment = ({ children }: { children: ASTNode[]}) => {
+    const [ left, right ] = children
+    if (!isIdentifier(left)) {
+      throw new Error('cannot construct assignment with a non-identifier lhs?')
+    }
+    return [
+      ...this.codegen(right),
+      inst(Opcode.ASTORE, this.findOrCreateRegisterForIdentifier(left.name)),
+    ]
+  }
 
   private codegen(node: ASTNode): Instruction[] {
     return this[node.kind](node)
@@ -74,17 +86,13 @@ export class EdenCodeEngine implements CodeEngine {
     }
   }
 
-  // private findOrCreateLocalVariable(id: string): number {
-  //   // const exists = Object.keys(this.locals).includes(id)
-  //   // if (exists) {
-  //   //   return this.locals[id] //.indexOf(id)
-  //   // } else {
-  //   //   // if (this.locals.length > 6) {
-  //   //   //   // use a hash table?
-  //   //   //   throw new Error('only six locals at once!! impl hash table or smth')
-  //   //   // }
-  //   //   // are there unused registry keys?
-  //   //   // return this.locals[id] = //.push(new EveInteger(value)) - 1
-  //   // }
-  // }
+  get idPool(): Set<RegistryKey> { return new Set(Object.values(this.identifiers)) }
+
+  private findOrCreateRegisterForIdentifier(id: string): number {
+    const exists = Object.keys(this.identifiers).includes(id)
+    if (!exists) {
+      this.identifiers[id] = this.idPool.size
+    }
+    return this.identifiers[id]
+  }
 }

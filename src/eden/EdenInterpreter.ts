@@ -17,6 +17,7 @@ export class EdenInterpreter implements Interpreter {
   parser: Parser = new EdenParser()
   prettyPrinter: TreeInspector = new EdenTreeInspector()
 
+  eve = new Eve()
   evaluate(_input: string): JSValue {
     const ast = this.parser.parse(_input)
     if (this.config.debug) {
@@ -24,14 +25,13 @@ export class EdenInterpreter implements Interpreter {
       console.log(prettyAst)
     }
     if (ast.kind === ASTNodeKind.Nothing) {
-      // we probably got a parse error
+      // we might have a parse error comment to display..
       console.warn(ast.comment)
       return null
     } else {
       const code = this.interpret(ast)
-      const eve = new Eve()
-      eve.vm.constantPool = this.engine.constants
-      return eve.execute(code).js
+      this.eve.vm.constantPool = this.engine.constants /// hmmmm -- we need to share it w codegen..
+      return this.eve.execute(code).js
     }
   }
 
