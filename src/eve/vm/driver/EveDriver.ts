@@ -1,9 +1,19 @@
-import { VM, Program, Stack, EveValue } from '../types'
+import { VM, Program, Stack, EveValue, Instruction } from '../types'
 import { Opcode } from '../Opcode'
 import { Executor } from '../Executor'
 import { Driver } from './Driver'
 import { FlightRecording } from './FlightRecording'
 import { eveNull } from './EveVM'
+
+export class Timer {
+  // type Milliseconds = number & { unit: 'milliseconds' }
+  static measureMillis<T>(instrumentedMethod: () => T): [number, T] {
+    const startTime = new Date().getTime()
+    const result: T = instrumentedMethod()
+    const timeElapsed = new Date().getTime() - startTime
+    return [timeElapsed as number, result]
+  }
+}
 
 type Frame = { 
   instructionPointer: number
@@ -48,35 +58,39 @@ export class EveDriver extends Driver {
 
   // todo refactor?
   runUntilHalt(programName = '_program'): FlightRecording {
-    const startTime = new Date().getTime()
     const program = this.programLibrary[programName]
+    if (!program) { throw new Error('no such program ' + programName) }
+    this.currentProgramName = programName
     this.instructionPointer = 0
-    let instructionsPerformed = 0
-    if (program) {
-      this.currentProgramName = programName
-      let nextInstruction = program[0]
-      while(!this.vm.halted && nextInstruction) {
-        const oldIp = this.instructionPointer
-        const oldFrameLength = this.frames.length
-        Executor.perform(nextInstruction, this.vm)
-        instructionsPerformed++
-        if (oldIp === this.instructionPointer || this.frames.length !== oldFrameLength) {
-          // vm didn't move the ip => so increment it
-          this.instructionPointer++
-        }
-        nextInstruction = program[this.instructionPointer]
-      }
-      this.currentProgramName = ''
-    } else {
-      throw new Error('no such program ' + programName)
-    }
-
-    const timeElapsed = new Date().getTime() - startTime
+    const flightPlan = () => this.followProgram(program)
+    const [timeElapsed, instructionsPerformed] = Timer.measureMillis(flightPlan)
+    this.currentProgramName = ''
     const recording: FlightRecording = {
       instructionsPerformed,
       timeElapsed
     }
     return recording
+  }
+
+  private followProgram(program: Program): number {
+    let nextInstruction = program[0]
+    let stepCount = 0
+    while (!this.vm.halted && nextInstruction) {
+      this.runOneInstruction(nextInstruction)
+      stepCount++
+      nextInstruction = program[this.instructionPointer]
+    }
+    return stepCount
+  }
+
+  runOneInstruction(instruction: Instruction): void {
+    const oldIp = this.instructionPointer
+    const oldFrameLength = this.frames.length
+    Executor.perform(instruction, this.vm)
+    if (oldIp === this.instructionPointer || this.frames.length !== oldFrameLength) {
+      // vm didn't move the ip => so increment it
+      this.instructionPointer++
+    }
   }
 
   static optimize = (program: Program): Program => program.map(instruction => {

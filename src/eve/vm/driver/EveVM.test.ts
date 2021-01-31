@@ -1,9 +1,24 @@
 import { EveString } from '../data-types/EveString'
 import { EveVM } from './EveVM'
 import { VM } from '../types'
+import { Operation } from '../Operation'
+
+const constantFor = (value: number) => {
+  if (value === 0) { return 'load_const_zero' }
+  else if (value === 1) { return 'load_const_one' }
+  else if (value === 2) { return 'load_const_two' }
+  else { throw new Error('no constant found for ' + value) }
+}
+
+let vm: VM
+const verify = (method: Operation, left: number, right: number, result: number) => {
+  vm[constantFor(left)]()
+  vm[constantFor(right)]()
+  vm[method]()
+  expect(vm.top.js).toEqual(result)
+}
 
 describe(EveVM, () => {
-  let vm: VM
   beforeEach(() => {
     vm = new EveVM()
   })
@@ -12,91 +27,53 @@ describe(EveVM, () => {
 
   describe('int math', () => {
     it('can add integers', () => {
-      vm.load_const_one()
-      vm.load_const_one()
-      vm.iadd()
-      expect(vm.top.js).toEqual(2)
-
-      vm.load_const_one()
-      vm.load_const_two()
-      vm.iadd()
-      expect(vm.top.js).toEqual(3)
-
-      vm.load_const_two()
-      vm.load_const_two()
-      vm.iadd()
-      expect(vm.top.js).toEqual(4)
-
-      vm.load_const_zero()
-      vm.load_const_two()
-      vm.iadd()
-      expect(vm.top.js).toEqual(2)
+      verify(Operation.IntegerAdd, 1, 1, 2)
+      verify(Operation.IntegerAdd, 1, 2, 3)
+      verify(Operation.IntegerAdd, 2, 2, 4)
+      verify(Operation.IntegerAdd, 0, 1, 1)
+      verify(Operation.IntegerAdd, 1, 0, 1)
+      verify(Operation.IntegerAdd, 2, 0, 2)
+      verify(Operation.IntegerAdd, 0, 2, 2)
     })
 
     it('can subtract integers', () => {
-      vm.load_const_one()
-      vm.load_const_one()
-      vm.isub()
-      expect(vm.top.js).toEqual(0)
-
-      vm.load_const_two()
-      vm.load_const_one()
-      vm.isub()
-      expect(vm.top.js).toEqual(1)
-
-      vm.load_const_two()
-      vm.load_const_two()
-      vm.isub()
-      expect(vm.top.js).toEqual(0)
-
-      vm.load_const_zero()
-      vm.load_const_two()
-      vm.isub()
-      expect(vm.top.js).toEqual(-2)
+      verify(Operation.IntegerSubtract, 1, 1, 0)
+      verify(Operation.IntegerSubtract, 1, 2, -1)
+      verify(Operation.IntegerSubtract, 2, 2, 0)
+      verify(Operation.IntegerSubtract, 0, 1, -1)
+      verify(Operation.IntegerSubtract, 1, 0, 1)
+      verify(Operation.IntegerSubtract, 2, 0, 2)
+      verify(Operation.IntegerSubtract, 0, 2, -2)
     })
 
     it('can multiply integers', () => {
-      vm.load_const_one()
-      vm.load_const_one()
-      vm.imul()
-      expect(vm.top.js).toEqual(1)
-
-      vm.load_const_two()
-      vm.load_const_one()
-      vm.imul()
-      expect(vm.top.js).toEqual(2)
-
-      vm.load_const_two()
-      vm.load_const_two()
-      vm.imul()
-      expect(vm.top.js).toEqual(4)
-
-      vm.load_const_zero()
-      vm.load_const_two()
-      vm.imul()
-      expect(vm.top.js).toEqual(0)
+      verify(Operation.IntegerMultiply, 1, 1, 1)
+      verify(Operation.IntegerMultiply, 1, 2, 2)
+      verify(Operation.IntegerMultiply, 2, 2, 4)
+      verify(Operation.IntegerMultiply, 0, 1, 0)
+      verify(Operation.IntegerMultiply, 1, 0, 0)
+      verify(Operation.IntegerMultiply, 2, 0, 0)
+      verify(Operation.IntegerMultiply, 0, 2, 0)
     })
 
     it('can divide integers', () => {
-      vm.load_const_one()
-      vm.load_const_one()
-      vm.idiv()
-      expect(vm.top.js).toEqual(1)
+      verify(Operation.IntegerDivide, 1, 1, 1)
+      verify(Operation.IntegerDivide, 1, 2, 1/2)
+      verify(Operation.IntegerDivide, 2, 2, 1)
+      verify(Operation.IntegerDivide, 0, 1, 0)
+      verify(Operation.IntegerDivide, 1, 0, Infinity)
+      verify(Operation.IntegerDivide, 2, 0, Infinity)
+      verify(Operation.IntegerDivide, 0, 2, 0)
+    })
 
-      vm.load_const_two()
-      vm.load_const_one()
-      vm.idiv()
-      expect(vm.top.js).toEqual(2)
-
-      vm.load_const_two()
-      vm.load_const_two()
-      vm.idiv()
-      expect(vm.top.js).toEqual(1)
-
-      vm.load_const_zero()
-      vm.load_const_two()
-      vm.idiv()
-      expect(vm.top.js).toEqual(0)
+    it('can exponentiate integers', () => {
+      verify(Operation.IntegerExponentiate, 1, 1, 1)
+      verify(Operation.IntegerExponentiate, 1, 2, 1)
+      verify(Operation.IntegerExponentiate, 2, 2, 4)
+      verify(Operation.IntegerExponentiate, 0, 1, 0)
+      verify(Operation.IntegerExponentiate, 1, 0, 1)
+      verify(Operation.IntegerExponentiate, 2, 0, 1)
+      verify(Operation.IntegerExponentiate, 0, 2, 0)
     })
   })
 
