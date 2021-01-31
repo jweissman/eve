@@ -23,6 +23,8 @@ const instructionTable: InstructionTable = {
   [Opcode.POP]: Operation.Pop,
   [Opcode.STR_JOIN]: Operation.StringJoin,
   [Opcode.THROW]: Operation.Throw,
+  [Opcode.CALL]: Operation.Call,
+  [Opcode.RET]: Operation.Return,
 }
 
 export { instructionTable }

@@ -1,10 +1,10 @@
 import { EveInteger } from './data-types/EveInteger'
 import { EveNull } from './data-types/EveNull'
 import { EveString } from './data-types/EveString'
+import { Driver } from './driver/Driver'
 import { Opcode } from './Opcode'
 import { Operation } from './Operation'
 import { RegistryKey } from './RegistryKey'
-import { VMDriver } from './driver/VMDriver'
 
 type OperandByte = number
 type Instruction = {
@@ -29,6 +29,7 @@ type VMMethodArgs = Partial<{
   targetLabel: string
 }>
 type VMMethod = (instruction?: VMMethodArgs) => void 
+
 type VMKernel = { [key in Operation]: VMMethod }
 
 type Stack = EveValue[]
@@ -38,7 +39,7 @@ type ConstantPool = EveValue[]
 type VM = VMKernel & {
   constantPool: ConstantPool
   stack: Stack
-  readonly driver: VMDriver
+  readonly driver: Driver
   readonly registry: Register
   readonly halted: boolean
   readonly top: EveValue

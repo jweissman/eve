@@ -19,4 +19,6 @@ export enum Operation {
   Jump = 'jump',
   Throw = 'throw',
   Goto = 'goto',
+  Call = 'call',
+  Return = 'ret',
 }

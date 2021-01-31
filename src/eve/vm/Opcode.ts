@@ -28,4 +28,6 @@ export enum Opcode {
 
   GOTO = 0xf0,
   JUMP = 0xf1,
+  CALL = 0xf2,
+  RET = 0xf3,
 }

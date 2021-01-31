@@ -8,7 +8,7 @@ describe(EveVM, () => {
     vm = new EveVM()
   })
 
-  it('is okay to noop sometimes', () => expect(() => vm.noop()).not.toThrow())
+  it('noop', () => expect(() => vm.noop()).not.toThrow())
 
   describe('int math', () => {
     it('can add integers', () => {
@@ -113,17 +113,24 @@ describe(EveVM, () => {
   it('loads constants by index', () => {
     vm.constantPool = [ new EveString('hello') ]
     vm.load_const_by_index({ operandOne: 0 })
-    expect(vm.stack[vm.stack.length-1].js).toEqual('hello')
+    expect(vm.top.js).toEqual('hello')
   })
 
   it('stores/loads from registers', () => {
     vm.constantPool = [ new EveString('hi') ]
-    // vm.registry = { [RegisterKey.A]: new EveString('hi') }
     vm.load_const_by_index({ operandOne: 0 })
     vm.add_to_store({ operandOne: 0 })
     vm.load_from_store({ operandOne: 0 })
     expect(vm.top.js).toEqual('hi')
   })
+
+  // seems easier to do this at 'asm' layer??
+  // it('call nullary function..', () => {
+  //   vm.constantPool = [ new EveReference({
+  //     comment: 'function foo()',
+  //     programOffset: 10
+  //   }) ]
+  // })
 
   describe('error conditions', () => {
     it('throws on data type mismatch', () => {

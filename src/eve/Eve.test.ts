@@ -3,18 +3,19 @@ import { EveString } from './vm/data-types/EveString'
 import { EveInteger } from './vm/data-types/EveInteger'
 import { Opcode } from './vm/Opcode'
 import { RegistryKey } from './vm/RegistryKey'
-import { inst, label, goto } from './vm/InstructionHelpers'
+import { inst, label, goto, call } from './vm/InstructionHelpers'
 
 describe(Eve, () => {
-  const driver = new Eve()
+  let eve: Eve
+  beforeEach(() => { eve = new Eve() })
 
   it('noop', () => {
-    const result = driver.execute([ inst(Opcode.NOOP) ])
+    const result = eve.execute([ inst(Opcode.NOOP) ])
     expect(result.js).toEqual(null)
   })
 
   it('computes the sum of one added to itself', () => {
-    const result = driver.execute([
+    const result = eve.execute([
       inst(Opcode.LCONST_ONE),
       inst(Opcode.LCONST_ONE),
       inst(Opcode.INT_ADD)
@@ -23,7 +24,7 @@ describe(Eve, () => {
   })
   
   it('computes the sum of one and two', () => {
-    const result = driver.execute([
+    const result = eve.execute([
       inst(Opcode.LCONST_ONE),
       inst(Opcode.LCONST_TWO),
       inst(Opcode.INT_ADD)
@@ -32,7 +33,7 @@ describe(Eve, () => {
   })
 
   it('computes the sum of zero and one', () => {
-    const result = driver.execute([
+    const result = eve.execute([
       inst(Opcode.LCONST_ONE),
       inst(Opcode.LCONST_ZERO),
       inst(Opcode.INT_ADD)
@@ -41,8 +42,8 @@ describe(Eve, () => {
   })
   
   it('computes the sum of larger numbers', () => {
-    driver.vm.constantPool = [ new EveInteger(3), new EveInteger(4) ]
-    const result = driver.execute([
+    eve.vm.constantPool = [ new EveInteger(3), new EveInteger(4) ]
+    const result = eve.execute([
       inst(Opcode.LCONST_IDX, 0),
       inst(Opcode.LCONST_IDX, 1),
       inst(Opcode.INT_ADD)
@@ -51,8 +52,8 @@ describe(Eve, () => {
   })
 
   it('joins strings', () => {
-    driver.vm.constantPool = [ new EveString('hello '), new EveString('world') ]
-    const result = driver.execute([
+    eve.vm.constantPool = [ new EveString('hello '), new EveString('world') ]
+    const result = eve.execute([
       inst(Opcode.LCONST_IDX, 0),
       inst(Opcode.LCONST_IDX, 1),
       inst(Opcode.STR_JOIN)
@@ -61,8 +62,8 @@ describe(Eve, () => {
   })
 
   it('stores and loads values', () => {
-    driver.vm.constantPool = [ new EveString('hello '), new EveString('there') ]
-    const result = driver.execute([
+    eve.vm.constantPool = [ new EveString('hello '), new EveString('there') ]
+    const result = eve.execute([
       inst(Opcode.LCONST_IDX, 0),
       inst(Opcode.ASTORE, RegistryKey.A),
       inst(Opcode.LCONST_IDX, 1),
@@ -76,19 +77,19 @@ describe(Eve, () => {
   })
 
   it('throws an error', () => {
-    const executeThrow = () => driver.execute([ inst(Opcode.THROW) ])
+    const executeThrow = () => eve.execute([ inst(Opcode.THROW) ])
     expect(executeThrow).toThrow( 'EveException: Threw at line 0 in _program')
 
-    const executeThrowOnLineOne = () => driver.execute([ inst(Opcode.NOOP), inst(Opcode.THROW) ])
+    const executeThrowOnLineOne = () => eve.execute([ inst(Opcode.NOOP), inst(Opcode.THROW) ])
     expect(executeThrowOnLineOne).toThrow( 'EveException: Threw at line 1 in _program')
   })
 
   it('illegal op', () => {
-    expect(() => driver.execute([ inst(-1) ])).toThrow()
+    expect(() => eve.execute([ inst(-1) ])).toThrow()
   })
 
   it('jumps to a specific program offset', () => {
-    const result = driver.execute([
+    const result = eve.execute([
       inst(Opcode.LCONST_ONE),  // 0
       inst(Opcode.JUMP_Z, 4),   // 1
       inst(Opcode.LCONST_ZERO), // 2
@@ -100,11 +101,11 @@ describe(Eve, () => {
   })
 
   it('goto label', () => {
-    driver.vm.constantPool = [
+    eve.vm.constantPool = [
       new EveInteger(-1),
       new EveInteger(10)
     ]
-    const result = driver.execute([
+    const result = eve.execute([
       inst(Opcode.LCONST_IDX, 1), 
       inst(Opcode.ASTORE, RegistryKey.A),
       label('start'),
@@ -125,9 +126,42 @@ describe(Eve, () => {
   })
 
   it('goto with missing label', () => {
-    expect(() => driver.execute([ goto('nowhere') ]))
+    expect(() => eve.execute([ goto('nowhere') ]))
       .toThrow('code optimize failed -- no such label nowhere')
   })
 
-  test.todo('invokes a subroutine and returns')
+  it('invokes a nullary subroutine and returns', () => {
+    eve.vm.constantPool = [ new EveInteger(-1) ]
+    const result = eve.execute([
+      label('main'),
+      call('sub'), // <--- is where the bottom stack frame is pointing
+      goto('done'),
+      inst(Opcode.THROW),
+      label('sub'),
+      inst(Opcode.LCONST_IDX, 0),
+      inst(Opcode.RET),
+      inst(Opcode.THROW), // execution should not get here :)
+      label('done'),
+    ])
+    expect(result.js).toEqual(-1)
+  })
+
+  it('invokes a unary subroutine and returns', () => {
+    eve.vm.constantPool = [ new EveInteger(2), new EveInteger(4) ]
+    const result = eve.execute([
+      label('main'),
+      inst(Opcode.LCONST_IDX, 1),
+      call('double', 1),
+      call('double', 1),
+      goto('done'),
+      inst(Opcode.THROW),
+      label('double'),
+      inst(Opcode.LCONST_IDX, 0),
+      inst(Opcode.INT_MUL),
+      inst(Opcode.RET),
+      inst(Opcode.THROW),
+      label('done')
+    ])
+    expect(result.js).toEqual(16)
+  })
 })

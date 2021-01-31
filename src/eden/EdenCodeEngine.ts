@@ -55,7 +55,7 @@ export class EdenCodeEngine implements CodeEngine {
     if (!isIdentifier(left)) {
       throw new Error('cannot construct assignment with a non-identifier lhs?')
     }
-    console.log(`[CodeEngine] assignment: ${JSON.stringify(left)} = ${JSON.stringify(right)}`)
+    // console.log(`[CodeEngine] assignment: ${JSON.stringify(left)} = ${JSON.stringify(right)}`)
     return [
       ...this.codegen(right),
       inst(Opcode.ASTORE, this.findOrCreateRegisterForIdentifier(left.name)),

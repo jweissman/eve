@@ -1,27 +1,22 @@
-// import util from 'util'
 import { VM, ConstantPool, Stack, EveValue, Register, VMMethodArgs } from '../types'
-import { VMDriver } from './VMDriver'
+import { Driver } from './Driver'
 import { EveString } from '../data-types/EveString'
 import { EveInteger } from '../data-types/EveInteger'
 import { EveNull } from '../data-types/EveNull'
 import { RegistryKey } from '../RegistryKey'
-import { EveVMDriver } from './EveVMDriver'
+import { EveDriver } from './EveDriver'
 
-const eveNull = new EveNull()
+export const eveNull = new EveNull()
 const eveZero = new EveInteger(0)
 const eveOne = new EveInteger(1)
 const eveTwo = new EveInteger(2)
 
-// other useful int constants
-// const eveTen = new EveInteger(10)
-// const eveNegativeOne = new EveInteger(-1)
-
 class EveVM implements VM {
   private constants: ConstantPool = []
   private isHalted = false
+  driver: Driver = new EveDriver(this)
 
-  driver: VMDriver = new EveVMDriver(this)
-  stack: Stack = [];
+  get stack(): Stack { return this.driver.stack }
   registry: Register = {
     [RegistryKey.A]: eveNull,
     [RegistryKey.B]: eveNull,
@@ -146,6 +141,24 @@ class EveVM implements VM {
   }
 
   goto = (): void => { throw new Error('goto not actually valid (note: should get optimized into unconditional jumps)')}
+
+  call = (instruction?: VMMethodArgs): void => {
+    if (!instruction || instruction.operandOne === undefined || instruction.operandTwo === undefined) {
+      throw new Error('call -- program offset or arity undefined')
+    }
+    // jump to prog offset
+    // this.driver.instructionPointer = programOffset;
+    // do that by pushing a frame onto a frame stack
+    this.driver.pushStackFrame({
+      programOffset: instruction.operandOne
+    }, instruction.operandTwo)
+  }
+
+  ret = (): void => {
+    // pop a frame stack, or just jump to ret address
+    // throw new Error('ret not impl')
+    this.driver.popStackFrame()
+  }
 
   private push(value: EveValue) { this.stack.push(value) }
   get top(): EveValue  { return this.stack[this.stack.length-1] || eveNull }
