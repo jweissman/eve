@@ -1,24 +1,24 @@
 Eden {
-  Stmt = Expression
+  Program
+    = Expression
+    | Nothing
 
   Expression
-    = CompoundExpression
-    | SimpleExpression
+    = SimpleExpression Nothing -- simple
+    | CompoundExpression
     
   SimpleExpression
     = AssignmentExpression
     | ArithmeticExpression
-    | Nothing
 
-  CompoundExpression = NonemptyListOf<Stmt, sep+>
+  CompoundExpression
+    = NonemptyListOf<SimpleExpression, sep*>
   sep = ";" | "\n" | "\r"
 
   AssignmentExpression = Identifier Equals SimpleExpression
   Equals = "="
 
   ArithmeticExpression = AdditiveExpression
-                      //  | multiplication
-                      //  | primitiveExpression
 
   AdditiveExpression = Addition 
                      | MultiplicativeExpression
@@ -41,17 +41,21 @@ Eden {
   PrimitiveExpression = ParentheticalExpression
                       | Atom
   
-  ParentheticalExpression = "(" Expression ")"
+  ParentheticalExpression = "(" SimpleExpression ")"
 
   Atom = IntegerLiteral
        | Identifier
        // todo: identifier, string, symbol
+
   Identifier
-    = id
-  id = letter+
+    = idElement+
+
+  idElement = letter | "_"
   
   IntegerLiteral
     = number
   number = digit+
+
+  EmptyProgram = Nothing
   Nothing = ~any
 }

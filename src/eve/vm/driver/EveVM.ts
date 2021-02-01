@@ -16,7 +16,6 @@ class EveVM implements VM {
   private isHalted = false
   driver: Driver = new EveDriver(this)
 
-  get stack(): Stack { return this.driver.stack }
   registry: Register = {
     [RegistryKey.A]: eveNull,
     [RegistryKey.B]: eveNull,
@@ -27,8 +26,8 @@ class EveVM implements VM {
     [RegistryKey.G]: eveNull,
   }
 
+  get stack(): Stack { return this.driver.stack }
   get halted(): boolean { return this.isHalted }
-
   set constantPool(theConstants: ConstantPool) { this.constants = theConstants }
   set ip(programOffset: number) { this.driver.instructionPointer = programOffset }
 
@@ -62,16 +61,6 @@ class EveVM implements VM {
   ipow = (): void => this.integerBinaryOp((a, b) => new EveInteger(Math.pow(a.js, b.js)))
   imod = (): void => this.integerBinaryOp((a, b) => new EveInteger(((a.js % b.js ) + b.js ) % b.js))
 
-  private integerBinaryOp = (operation: (top: EveInteger, second: EveInteger) => EveInteger): void => {
-    const { top, second } = this
-    if (!(top instanceof EveInteger && second instanceof EveInteger)) {
-      throw new Error('Integer operation error -- one of top two values not eve int')
-    }
-    const result = operation(second, top)
-    // const eveResult = new EveInteger(jsResult)
-    this.pop_two()
-    this.push(result)
-  }
 
   join_strings = (): void => {
     const {top, second} = this
@@ -88,12 +77,7 @@ class EveVM implements VM {
     if (!instruction) { throw new Error('no instruction')}
     const { operandOne: register } = instruction
     if (register === undefined) { throw new Error('Load from store failed, key undefined') }
-    if (!(register in RegistryKey)) {
-      console.warn('Unnamed register used ' + register)
-    }
     const storedValue = this.registry[String(register)]
-    // console.log('[VM] STORE = ' + util.inspect(this.registry))
-    // console.log('[VM] READ FROM STORE: ' + register + ' => ' + storedValue.js)
     this.push(storedValue)
   }
 
@@ -101,13 +85,8 @@ class EveVM implements VM {
     if (!instruction) { throw new Error('no instruction')}
     const { operandOne: register } = instruction
     if (register === undefined) { throw new Error('Add to Store: key undefined') }
-    if (!(register in RegistryKey)) {
-      console.warn('Unnamed register used ' + register)
-    }
     const value = this.top
-    // console.log('[VM] ADD TO STORE: ' + register + ' <= ' + value.js)
     this.registry[String(register)] = value
-    // console.log('[VM] STORE AFTER: ' + util.inspect(this.registry))
     this.pop()
   }
 
@@ -146,23 +125,26 @@ class EveVM implements VM {
     if (!instruction || instruction.operandOne === undefined || instruction.operandTwo === undefined) {
       throw new Error('call -- program offset or arity undefined')
     }
-    // jump to prog offset
-    // this.driver.instructionPointer = programOffset;
-    // do that by pushing a frame onto a frame stack
     this.driver.pushStackFrame({
       programOffset: instruction.operandOne
     }, instruction.operandTwo)
   }
 
-  ret = (): void => {
-    // pop a frame stack, or just jump to ret address
-    // throw new Error('ret not impl')
-    this.driver.popStackFrame()
-  }
+  ret = (): void => this.driver.popStackFrame()
 
   private push(value: EveValue) { this.stack.push(value) }
   get top(): EveValue  { return this.stack[this.stack.length-1] || eveNull }
   get second(): EveValue  { return this.stack[this.stack.length-2] || eveNull }
+
+  private integerBinaryOp = (operation: (top: EveInteger, second: EveInteger) => EveInteger): void => {
+    const { top, second } = this
+    if (!(top instanceof EveInteger && second instanceof EveInteger)) {
+      throw new Error('Integer operation error -- one of top two values not eve int')
+    }
+    const result = operation(second, top)
+    this.pop_two()
+    this.push(result)
+  }
 }
 
 export { EveVM }

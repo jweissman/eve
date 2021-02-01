@@ -25,8 +25,14 @@ export function isIntLit(node: ASTNode): node is ASTIntegerLiteral {
 
 
 type ASTBinaryExpression = ASTNodeCommon & { kind: ASTNodeKind.BinaryExpression, operator: BinaryOperator }
+export function isBinaryExpression(node: ASTNode): node is ASTBinaryExpression {
+  return node.kind === ASTNodeKind.BinaryExpression
+}
 
 type ASTAssignment = ASTNodeCommon & { kind: ASTNodeKind.Assignment }
+export function isAssignment(node: ASTNode): node is ASTAssignment {
+  return node.kind === ASTNodeKind.Assignment
+}
 
 export type ASTNode = ASTNothing
                     | ASTIdentifier

@@ -1,25 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import assertNever from 'assert-never'
 import { EveInteger } from '../eve/vm/data-types/EveInteger'
 import { inst } from '../eve/vm/InstructionHelpers'
 import { Opcode } from '../eve/vm/Opcode'
 import { RegistryKey } from '../eve/vm/RegistryKey'
 import { ConstantPool, Instruction } from '../eve/vm/types'
-import { ASTNode, isIdentifier, isIntLit } from './ASTNode'
-import { BinaryOperator } from './BinaryOperator'
+import { ASTNode, isAssignment, isBinaryExpression, isIdentifier, isIntLit } from './ASTNode'
+import { opcodeForBinaryOperation } from './opcodeForBinaryOperation'
 import { CodeEngine } from './types'
-
-const binaryOperation = (binaryOperator: BinaryOperator): Opcode => {
-  switch (binaryOperator) {
-  case BinaryOperator.Add: return Opcode.INT_ADD
-  case BinaryOperator.Subtract: return Opcode.INT_SUB
-  case BinaryOperator.Multiply: return Opcode.INT_MUL
-  case BinaryOperator.Divide: return Opcode.INT_DIV
-  case BinaryOperator.Power: return Opcode.INT_POW
-  case BinaryOperator.Modulus: return Opcode.INT_MOD
-  default: assertNever(binaryOperator)
-  }
-}
 
 // vm bytecode generator
 export class EdenCodeEngine implements CodeEngine {
@@ -30,32 +17,31 @@ export class EdenCodeEngine implements CodeEngine {
   program = ({ children }: { children: ASTNode[]}) =>
     children.map(child => this.codegen(child)).flat()
 
-  integerLiteral = (intLit: ASTNode) => (
-    isIntLit(intLit) ? [
-      this.loadIntegerConstant(intLit.numericValue)
-    ] : []
-  );
+  integerLiteral = (intLit: ASTNode) => {
+    if (!isIntLit(intLit)) { throw new Error('expected integer literal') }
+    return [ this.loadIntegerConstant(intLit.numericValue) ]
+  };
 
-  binaryExpression = ({ operator, children }: {
-    operator?: BinaryOperator;
-    children?: ASTNode[];
-  }) => (operator && children) ? [
-    ...children.flatMap((child: ASTNode) => this.codegen(child)),
-    inst(binaryOperation(operator))
-  ] : [];
+  binaryExpression = (expr: ASTNode) => {
+    if (!isBinaryExpression(expr)) { throw new Error('Expected binary expression') }
+    return [
+      ...expr.children.flatMap((child: ASTNode) => this.codegen(child)),
+      inst(opcodeForBinaryOperation(expr.operator))
+    ]
+  }
 
   // in general we want to load ids from local vars
-  identifier = (id: ASTNode) => isIdentifier(id) ? [
-    inst(Opcode.LSTORE, this.findOrCreateRegisterForIdentifier(id.name))
-  ] : []
+  identifier = (id: ASTNode) => {
+    if (!isIdentifier(id)) { throw new Error('expected id to be id?') } 
+    return [
+      inst(Opcode.LSTORE, this.findOrCreateRegisterForIdentifier(id.name))
+    ]
+  }
 
-  // ...except for assignments, where we want to store the values to locals
-  assignment = ({ children }: { children: ASTNode[]}) => {
-    const [ left, right ]: ASTNode[] = children
-    if (!isIdentifier(left)) {
-      throw new Error('cannot construct assignment with a non-identifier lhs?')
-    }
-    // console.log(`[CodeEngine] assignment: ${JSON.stringify(left)} = ${JSON.stringify(right)}`)
+  assignment = (assign: ASTNode) => {
+    if (!isAssignment(assign)) { throw new Error('expected assignment')}
+    const [ left, right ]: ASTNode[] = assign.children
+    if (!isIdentifier(left)) { throw new Error('cannot construct assignment with a non-identifier lhs?') }
     return [
       ...this.codegen(right),
       inst(Opcode.ASTORE, this.findOrCreateRegisterForIdentifier(left.name)),

@@ -1,84 +1,47 @@
 import { BinaryOperator } from './BinaryOperator'
 import { EdenParser } from './EdenParser'
 
-describe('parsing eden code', () => {
-  const parser = new EdenParser()
+const parser = new EdenParser()
 
-  it('parses the empty program', () => {
+const verifyParseId = (input: string) => {
+  expect(parser.parse(input)).toEqual({ kind: 'identifier', name: input })
+}
+
+const verifyParseArithmetic = (input: string, operator: BinaryOperator, left = 0, right = 1) => {
+  expect(parser.parse(input)).toEqual(
+    {
+      kind: 'binaryExpression', operator: operator, children: [
+        { kind: 'integerLiteral', numericValue: left },
+        { kind: 'integerLiteral', numericValue: right }
+      ]
+    }
+  )
+}
+
+describe('parsing eden code', () => {
+  xit('parses the empty program', () => {
     expect(parser.parse('')).toEqual({ kind: 'emptyProgram' })
   })
 
   describe('integer arithmetic', () => {
     it('parses numbers', () => {
-      expect(parser.parse('0')).toEqual({ kind: 'integerLiteral', numericValue: 0 })
-      expect(parser.parse('1')).toEqual({ kind: 'integerLiteral', numericValue: 1 })
-      expect(parser.parse('2')).toEqual({ kind: 'integerLiteral', numericValue: 2 })
+      ['0', '1', '2', '3', '10', '100', '1024'].forEach(value => {
+        expect(parser.parse(value)).toEqual({ kind: 'integerLiteral', numericValue: Number(value) })
+      })
     })
 
-    it('parses sums', () => {
-      expect(parser.parse('0+1')).toEqual(
-        {
-          kind: 'binaryExpression', operator: BinaryOperator.Add, children: [
-            { kind: 'integerLiteral', numericValue: 0 },
-            { kind: 'integerLiteral', numericValue: 1 }
-          ]
-        }
-      )
-    })
-
-    it('parses differences', () => {
-      expect(parser.parse('0-1')).toEqual(
-        {
-          kind: 'binaryExpression', operator: BinaryOperator.Subtract, children: [
-            { kind: 'integerLiteral', numericValue: 0 },
-            { kind: 'integerLiteral', numericValue: 1 }
-          ]
-        }
-      )
-    })
-
-    it('parses multiplications', () => {
-      expect(parser.parse('0*1')).toEqual(
-        {
-          kind: 'binaryExpression', operator: BinaryOperator.Multiply, children: [
-            { kind: 'integerLiteral', numericValue: 0 },
-            { kind: 'integerLiteral', numericValue: 1 }
-          ]
-        }
-      )
-    })
-
-    it('parses divisions', () => {
-      expect(parser.parse('0/1')).toEqual(
-        {
-          kind: 'binaryExpression', operator: BinaryOperator.Divide, children: [
-            { kind: 'integerLiteral', numericValue: 0 },
-            { kind: 'integerLiteral', numericValue: 1 }
-          ]
-        }
-      )
-    })
-
-    it('parses expontentiations', () => {
-      expect(parser.parse('0**1')).toEqual(
-        {
-          kind: 'binaryExpression', operator: BinaryOperator.Power, children: [
-            { kind: 'integerLiteral', numericValue: 0 },
-            { kind: 'integerLiteral', numericValue: 1 }
-          ]
-        }
-      )
-    })
-
-    it('parses modulus', () => {
-      expect(parser.parse('0%1')).toEqual(
-        {
-          kind: 'binaryExpression', operator: BinaryOperator.Modulus, children: [
-            { kind: 'integerLiteral', numericValue: 0 },
-            { kind: 'integerLiteral', numericValue: 1 }
-          ]
-        }
-      )
+    it('parses binary operators', () => {
+      const binaryOperatorCases = {
+        '0+1': BinaryOperator.Add,
+        '0-1': BinaryOperator.Subtract,
+        '0*1': BinaryOperator.Multiply,
+        '0/1': BinaryOperator.Divide,
+        '0%1': BinaryOperator.Modulus,
+        '0**1': BinaryOperator.Power,
+      }
+      Object.entries(binaryOperatorCases).forEach(([test, op]) => {
+        verifyParseArithmetic(test, op) // BinaryOperator.Add)
+      })
     })
 
     it('parses parens', () => {
@@ -108,14 +71,13 @@ describe('parsing eden code', () => {
   })
 
   describe('identifiers', () => {
-    it('parses a one-letter identifier', () => {
-      expect(parser.parse('a')).toEqual({ kind: 'identifier', name: 'a' })
-      expect(parser.parse('x')).toEqual({ kind: 'identifier', name: 'x' })
+    const singleLetterIds = ['a', 'b', 'c', 'd', 'e', 'x', 'y', 'z', '_']
+    const multipleLetterIds = ['abacus', 'bacteria', 'cactus', 'xylophone', '_underbar']
+    it('parses single-letter identifiers', () => {
+      singleLetterIds.forEach((identifier) => verifyParseId(identifier))
     })
-
-    it('parses a multi-letter identifier', () => {
-      expect(parser.parse('abc')).toEqual({ kind: 'identifier', name: 'abc' })
-      expect(parser.parse('xyz')).toEqual({ kind: 'identifier', name: 'xyz' })
+    it('parses multi-letter identifiers', () => {
+      multipleLetterIds.forEach((identifier) => verifyParseId(identifier))
     })
   })
 

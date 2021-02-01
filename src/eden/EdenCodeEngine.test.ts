@@ -8,6 +8,15 @@ describe(EdenCodeEngine, () => {
   let engine: CodeEngine
   beforeEach(() => { engine = new EdenCodeEngine() })
 
+  describe('error handling', () => {
+    it('should throw on invalid instruction', () => {
+      const kinds = ['integerLiteral', 'identifier', 'assignment']
+      kinds.forEach(nodeKind => {
+        expect(() => engine[nodeKind]({} as ASTNode)).toThrow()
+      })
+    })
+  })
+
   describe('the empty program', () => {
     it('generates empty inst list', () => {
       expect(engine.emptyProgram({} as ASTNode)).toEqual([])
@@ -15,7 +24,19 @@ describe(EdenCodeEngine, () => {
   })
 
   describe('integer literals', () => {
-    it('loads from constants', () => {
+    it('uses integer constants when available', () => {
+      expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 0 } as ASTNode)).toEqual([
+        { opcode: Opcode.LCONST_ZERO }
+      ])
+      expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 1 } as ASTNode)).toEqual([
+        { opcode: Opcode.LCONST_ONE }
+      ])
+      expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 2 } as ASTNode)).toEqual([
+        { opcode: Opcode.LCONST_TWO }
+      ])
+    })
+
+    it('loads from constant pool', () => {
       // first constant gets zero slot
       expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 100 } as ASTNode)).toEqual([
         { opcode: Opcode.LCONST_IDX, operandOne: 0 }

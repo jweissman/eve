@@ -11,7 +11,7 @@ const constantFor = (value: number) => {
 }
 
 let vm: VM
-const verify = (method: Operation, left: number, right: number, result: number) => {
+const verifyArithmetic = (method: Operation, left: number, right: number, result: number) => {
   vm[constantFor(left)]()
   vm[constantFor(right)]()
   vm[method]()
@@ -27,53 +27,53 @@ describe(EveVM, () => {
 
   describe('int math', () => {
     it('can add integers', () => {
-      verify(Operation.IntegerAdd, 1, 1, 2)
-      verify(Operation.IntegerAdd, 1, 2, 3)
-      verify(Operation.IntegerAdd, 2, 2, 4)
-      verify(Operation.IntegerAdd, 0, 1, 1)
-      verify(Operation.IntegerAdd, 1, 0, 1)
-      verify(Operation.IntegerAdd, 2, 0, 2)
-      verify(Operation.IntegerAdd, 0, 2, 2)
+      verifyArithmetic(Operation.IntegerAdd, 1, 1, 2)
+      verifyArithmetic(Operation.IntegerAdd, 1, 2, 3)
+      verifyArithmetic(Operation.IntegerAdd, 2, 2, 4)
+      verifyArithmetic(Operation.IntegerAdd, 0, 1, 1)
+      verifyArithmetic(Operation.IntegerAdd, 1, 0, 1)
+      verifyArithmetic(Operation.IntegerAdd, 2, 0, 2)
+      verifyArithmetic(Operation.IntegerAdd, 0, 2, 2)
     })
 
     it('can subtract integers', () => {
-      verify(Operation.IntegerSubtract, 1, 1, 0)
-      verify(Operation.IntegerSubtract, 1, 2, -1)
-      verify(Operation.IntegerSubtract, 2, 2, 0)
-      verify(Operation.IntegerSubtract, 0, 1, -1)
-      verify(Operation.IntegerSubtract, 1, 0, 1)
-      verify(Operation.IntegerSubtract, 2, 0, 2)
-      verify(Operation.IntegerSubtract, 0, 2, -2)
+      verifyArithmetic(Operation.IntegerSubtract, 1, 1, 0)
+      verifyArithmetic(Operation.IntegerSubtract, 1, 2, -1)
+      verifyArithmetic(Operation.IntegerSubtract, 2, 2, 0)
+      verifyArithmetic(Operation.IntegerSubtract, 0, 1, -1)
+      verifyArithmetic(Operation.IntegerSubtract, 1, 0, 1)
+      verifyArithmetic(Operation.IntegerSubtract, 2, 0, 2)
+      verifyArithmetic(Operation.IntegerSubtract, 0, 2, -2)
     })
 
     it('can multiply integers', () => {
-      verify(Operation.IntegerMultiply, 1, 1, 1)
-      verify(Operation.IntegerMultiply, 1, 2, 2)
-      verify(Operation.IntegerMultiply, 2, 2, 4)
-      verify(Operation.IntegerMultiply, 0, 1, 0)
-      verify(Operation.IntegerMultiply, 1, 0, 0)
-      verify(Operation.IntegerMultiply, 2, 0, 0)
-      verify(Operation.IntegerMultiply, 0, 2, 0)
+      verifyArithmetic(Operation.IntegerMultiply, 1, 1, 1)
+      verifyArithmetic(Operation.IntegerMultiply, 1, 2, 2)
+      verifyArithmetic(Operation.IntegerMultiply, 2, 2, 4)
+      verifyArithmetic(Operation.IntegerMultiply, 0, 1, 0)
+      verifyArithmetic(Operation.IntegerMultiply, 1, 0, 0)
+      verifyArithmetic(Operation.IntegerMultiply, 2, 0, 0)
+      verifyArithmetic(Operation.IntegerMultiply, 0, 2, 0)
     })
 
     it('can divide integers', () => {
-      verify(Operation.IntegerDivide, 1, 1, 1)
-      verify(Operation.IntegerDivide, 1, 2, 1/2)
-      verify(Operation.IntegerDivide, 2, 2, 1)
-      verify(Operation.IntegerDivide, 0, 1, 0)
-      verify(Operation.IntegerDivide, 1, 0, Infinity)
-      verify(Operation.IntegerDivide, 2, 0, Infinity)
-      verify(Operation.IntegerDivide, 0, 2, 0)
+      verifyArithmetic(Operation.IntegerDivide, 1, 1, 1)
+      verifyArithmetic(Operation.IntegerDivide, 1, 2, 1/2)
+      verifyArithmetic(Operation.IntegerDivide, 2, 2, 1)
+      verifyArithmetic(Operation.IntegerDivide, 0, 1, 0)
+      verifyArithmetic(Operation.IntegerDivide, 1, 0, Infinity)
+      verifyArithmetic(Operation.IntegerDivide, 2, 0, Infinity)
+      verifyArithmetic(Operation.IntegerDivide, 0, 2, 0)
     })
 
     it('can exponentiate integers', () => {
-      verify(Operation.IntegerExponentiate, 1, 1, 1)
-      verify(Operation.IntegerExponentiate, 1, 2, 1)
-      verify(Operation.IntegerExponentiate, 2, 2, 4)
-      verify(Operation.IntegerExponentiate, 0, 1, 0)
-      verify(Operation.IntegerExponentiate, 1, 0, 1)
-      verify(Operation.IntegerExponentiate, 2, 0, 1)
-      verify(Operation.IntegerExponentiate, 0, 2, 0)
+      verifyArithmetic(Operation.IntegerExponentiate, 1, 1, 1)
+      verifyArithmetic(Operation.IntegerExponentiate, 1, 2, 1)
+      verifyArithmetic(Operation.IntegerExponentiate, 2, 2, 4)
+      verifyArithmetic(Operation.IntegerExponentiate, 0, 1, 0)
+      verifyArithmetic(Operation.IntegerExponentiate, 1, 0, 1)
+      verifyArithmetic(Operation.IntegerExponentiate, 2, 0, 1)
+      verifyArithmetic(Operation.IntegerExponentiate, 0, 2, 0)
     })
   })
 
