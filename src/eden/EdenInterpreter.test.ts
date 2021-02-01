@@ -10,6 +10,9 @@ describe('eden interpreter', () => {
   })
 
   describe('basics', () => {
+    it('empty program', () => {
+      expect(interpreter.evaluate('')).toEqual(null)
+    })
     it('multiple lines', () => {
       expect(interpreter.evaluate('a=2;b=3;a+b')).toEqual(5)
     })

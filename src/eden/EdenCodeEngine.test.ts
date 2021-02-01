@@ -1,6 +1,6 @@
 import { Opcode } from '../eve/vm/Opcode'
-import { ASTNode } from './ASTNode'
-import { ASTNodeKind } from './ASTNodeKind'
+import { assignment, ASTNode, identifier, integerLiteral } from './ASTNode'
+// import { ASTNodeKind } from './ASTNodeKind'
 import { EdenCodeEngine } from './EdenCodeEngine'
 import { CodeEngine } from './types'
 
@@ -24,29 +24,29 @@ describe(EdenCodeEngine, () => {
   })
 
   describe('integer literals', () => {
+    const integerConstExamples = [
+      Opcode.LCONST_ZERO,
+      Opcode.LCONST_ONE,
+      Opcode.LCONST_TWO,
+    ]
     it('uses integer constants when available', () => {
-      expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 0 } as ASTNode)).toEqual([
-        { opcode: Opcode.LCONST_ZERO }
-      ])
-      expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 1 } as ASTNode)).toEqual([
-        { opcode: Opcode.LCONST_ONE }
-      ])
-      expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 2 } as ASTNode)).toEqual([
-        { opcode: Opcode.LCONST_TWO }
-      ])
+      (integerConstExamples).forEach((opcode, value) => {
+        const result = engine.integerLiteral(integerLiteral(value))
+        expect(result).toEqual([{ opcode: opcode }])
+      })
     })
 
     it('loads from constant pool', () => {
       // first constant gets zero slot
-      expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 100 } as ASTNode)).toEqual([
+      expect(engine.integerLiteral(integerLiteral(100))).toEqual([
         { opcode: Opcode.LCONST_IDX, operandOne: 0 }
       ])
       // second constant gets one slot
-      expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 101 } as ASTNode)).toEqual([
+      expect(engine.integerLiteral(integerLiteral(101))).toEqual([
         { opcode: Opcode.LCONST_IDX, operandOne: 1 } 
       ])
       // first const again gets zero slot
-      expect(engine.integerLiteral({ kind: 'integerLiteral', numericValue: 100 } as ASTNode)).toEqual([
+      expect(engine.integerLiteral(integerLiteral(100))).toEqual([
         { opcode: Opcode.LCONST_IDX, operandOne: 0 }
       ])
     })
@@ -54,13 +54,14 @@ describe(EdenCodeEngine, () => {
 
   describe('identifiers', () => {
     it('loads from registers', () => {
-      // first local identifier reads from register zero
-      expect(engine.identifier({ kind: 'identifier', name: 'theId' } as ASTNode)).toEqual([
+      // first local identifier reads from register zero?
+      // wait, how does it know this...?
+      expect(engine.identifier(identifier('theId'))).toEqual([
         { opcode: Opcode.LSTORE, operandOne: 0 }
       ])
 
       // second local identifier reads from register one
-      expect(engine.identifier({ kind: 'identifier', name: 'anotherId' } as ASTNode)).toEqual([
+      expect(engine.identifier(identifier('anotherId'))).toEqual([
         { opcode: Opcode.LSTORE, operandOne: 1 }
       ])
     })
@@ -68,38 +69,23 @@ describe(EdenCodeEngine, () => {
 
   describe('assignments', () => {
     it('writes to registers', () => {
-      expect(engine.assignment({
-        kind: ASTNodeKind.Assignment,
-        id: 'assignment',
-        children: [
-          { kind: 'identifier', name: 'theId' } as ASTNode,
-          { kind: 'integerLiteral', numericValue: 1024 } as ASTNode
-        ]
-      })).toEqual([
+      expect(engine.assignment(
+        assignment(identifier('theId'), integerLiteral(1024))
+      )).toEqual([
         { opcode: Opcode.LCONST_IDX, operandOne: 0 },
         { opcode: Opcode.ASTORE, operandOne: 0 },
       ])
 
-      expect(engine.assignment({
-        kind: ASTNodeKind.Assignment,
-        id: 'assignment',
-        children: [
-          { kind: ASTNodeKind.Identifier, name: 'anotherId' } as ASTNode,
-          { kind: ASTNodeKind.IntLit, numericValue: 256 } as ASTNode
-        ]
-      })).toEqual([
+      expect(engine.assignment(
+        assignment(identifier('anotherId'), integerLiteral(256))
+      )).toEqual([
         { opcode: Opcode.LCONST_IDX, operandOne: 1 },
         { opcode: Opcode.ASTORE, operandOne: 1 },
       ])
 
-      expect(engine.assignment({
-        kind: ASTNodeKind.Assignment,
-        id: 'assignment',
-        children: [
-          { kind: ASTNodeKind.Identifier, name: 'theId' } as ASTNode,
-          { kind: ASTNodeKind.IntLit, numericValue: 256 } as ASTNode
-        ]
-      })).toEqual([
+      expect(engine.assignment(
+        assignment(identifier('theId'), integerLiteral(256))
+      )).toEqual([
         { opcode: Opcode.LCONST_IDX, operandOne: 1 },
         { opcode: Opcode.ASTORE, operandOne: 0 },
       ])

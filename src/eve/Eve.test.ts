@@ -125,9 +125,11 @@ describe(Eve, () => {
     expect(result.js).toEqual(0)
   })
 
-  it('goto with missing label', () => {
+  it('call/goto with missing label', () => {
     expect(() => eve.execute([ goto('nowhere') ]))
       .toThrow('code optimize failed -- no such label nowhere')
+    expect(() => eve.execute([ call('nothing') ]))
+      .toThrow('code optimize failed -- no such label nothing')
   })
 
   it('invokes a nullary subroutine and returns', () => {

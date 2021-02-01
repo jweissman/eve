@@ -4,16 +4,7 @@ import { Executor } from '../Executor'
 import { Driver } from './Driver'
 import { FlightRecording } from './FlightRecording'
 import { eveNull } from './EveVM'
-
-export class Timer {
-  // type Milliseconds = number & { unit: 'milliseconds' }
-  static measureMillis<T>(instrumentedMethod: () => T): [number, T] {
-    const startTime = new Date().getTime()
-    const result: T = instrumentedMethod()
-    const timeElapsed = new Date().getTime() - startTime
-    return [timeElapsed as number, result]
-  }
-}
+import { Timer } from './Timer'
 
 type Frame = { 
   instructionPointer: number
@@ -56,7 +47,6 @@ export class EveDriver extends Driver {
     this.programLibrary[name] = optimized
   }
 
-  // todo refactor?
   runUntilHalt(programName = '_program'): FlightRecording {
     const program = this.programLibrary[programName]
     if (!program) { throw new Error('no such program ' + programName) }
@@ -88,7 +78,6 @@ export class EveDriver extends Driver {
     const oldFrameLength = this.frames.length
     Executor.perform(instruction, this.vm)
     if (oldIp === this.instructionPointer || this.frames.length !== oldFrameLength) {
-      // vm didn't move the ip => so increment it
       this.instructionPointer++
     }
   }
@@ -98,7 +87,6 @@ export class EveDriver extends Driver {
     if (instruction.opcode === Opcode.GOTO) {
       const targetInstruction = program.find((inst) => inst.label === instruction.targetLabel)
       if (targetInstruction) {
-        // replace with unconditional jump
         newInstruction.opcode = Opcode.JUMP
         newInstruction.operandOne = program.indexOf(targetInstruction)
       } else {
@@ -107,8 +95,6 @@ export class EveDriver extends Driver {
     } else if (instruction.opcode === Opcode.CALL) {
       const targetInstruction = program.find((inst) => inst.label === instruction.targetLabel)
       if (targetInstruction) {
-        // replace with call at program offset (todo -- args..? are there other things to do around a funcall..?)
-        // newInstruction.opcode = Opcode.CALL
         newInstruction.operandOne = program.indexOf(targetInstruction)
       } else {
         throw new Error('code optimize failed -- no such label ' + instruction.targetLabel)
