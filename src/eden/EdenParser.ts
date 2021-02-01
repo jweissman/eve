@@ -10,7 +10,6 @@ export class EdenParser implements Parser {
     const match: MatchResult = edenGrammar.match(input)
     if (match.failed()) {
       const empty: ASTNode = {
-        id: 'mu',
         children: [],
         kind: ASTNodeKind.Nothing,
         comment: 'EdenParser: match failed at ' + match.message
