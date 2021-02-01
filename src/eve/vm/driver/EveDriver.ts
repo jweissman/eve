@@ -3,8 +3,8 @@ import { Opcode } from '../Opcode'
 import { Executor } from '../Executor'
 import { Driver } from './Driver'
 import { FlightRecording } from './FlightRecording'
-import { eveNull } from './EveVM'
 import { Timer } from './Timer'
+import { eveNull } from '../Constants'
 
 type Frame = { 
   instructionPointer: number
