@@ -28,12 +28,12 @@ type VMMethodArgs = Partial<{
   operandTwo: number,
   targetLabel: string
 }>
-type VMMethod = (instruction?: VMMethodArgs) => void 
+export type VMMethod = (instruction?: VMMethodArgs) => void 
 
 type VMKernel = { [key in Operation]: VMMethod }
 
 type Stack = EveValue[]
-type Register = { [key in RegistryKey]: EveValue } 
+type Register = { [key in RegistryKey]?: EveValue } 
 type ConstantPool = EveValue[]
 
 type VM = VMKernel & {

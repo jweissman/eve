@@ -1,26 +1,15 @@
 import { VM, ConstantPool, Stack, Register, VMMethodArgs } from '../types'
 import { Driver } from './Driver'
 import { EveString } from '../data-types/EveString'
-import { RegistryKey } from '../RegistryKey'
 import { EveDriver } from './EveDriver'
-import { eveNull } from '../Constants'
+// import { eveNull } from '../Constants'
 import { ArithmeticLogicUnit } from './ArithmeticLogicUnit'
 
 class EveVM extends ArithmeticLogicUnit implements VM {
   driver: Driver = new EveDriver(this)
+  registry: Register = {}
   private constants: ConstantPool = []
   private isHalted = false
-
-  registry: Register = {
-    [RegistryKey.A]: eveNull,
-    [RegistryKey.B]: eveNull,
-    [RegistryKey.C]: eveNull,
-    [RegistryKey.D]: eveNull,
-    [RegistryKey.E]: eveNull,
-    [RegistryKey.F]: eveNull,
-    [RegistryKey.G]: eveNull,
-  }
-
   get stack(): Stack { return this.driver.stack }
   get halted(): boolean { return this.isHalted }
   set constantPool(theConstants: ConstantPool) { this.constants = theConstants }
@@ -55,7 +44,12 @@ class EveVM extends ArithmeticLogicUnit implements VM {
     if (!instruction) { throw new Error('no instruction')}
     const { operandOne: register } = instruction
     if (register === undefined) { throw new Error('Load from store failed, key undefined') }
+    // if (!Object.keys(this.registry).includes(String(register))) {
+    // }
     const storedValue = this.registry[String(register)]
+    if (storedValue === undefined) {
+      throw new Error('Load from store failed: no value at register ' + register)
+    }
     this.stack.push(storedValue)
   }
 

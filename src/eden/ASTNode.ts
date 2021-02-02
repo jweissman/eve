@@ -17,7 +17,7 @@ export function identifier(value: string): ASTIdentifier {
   return { kind: ASTNodeKind.Identifier, name: value, children: [] }
 }
 
-type ASTIntegerLiteral = ASTNodeCommon & { kind: ASTNodeKind.IntLit, numericValue: number }
+export type ASTIntegerLiteral = ASTNodeCommon & { kind: ASTNodeKind.IntLit, numericValue: number }
 export function isIntLit(node: ASTNode): node is ASTIntegerLiteral {
   return node.kind === ASTNodeKind.IntLit
 }
@@ -25,12 +25,15 @@ export function integerLiteral(value: number): ASTIntegerLiteral {
   return { kind: ASTNodeKind.IntLit, numericValue: value, children: [] }
 }
 
-type ASTBinaryExpression = ASTNodeCommon & { kind: ASTNodeKind.BinaryExpression, operator: BinaryOperator }
+export type ASTBinaryExpression = ASTNodeCommon & { kind: ASTNodeKind.BinaryExpression, operator: BinaryOperator }
 export function isBinaryExpression(node: ASTNode): node is ASTBinaryExpression {
   return node.kind === ASTNodeKind.BinaryExpression
 }
+export function binaryExpression(operator: BinaryOperator, left: ASTNode, right: ASTNode): ASTBinaryExpression {
+  return { kind: ASTNodeKind.BinaryExpression, operator, children: [ left, right ] }
+}
 
-type ASTAssignment = ASTNodeCommon & { kind: ASTNodeKind.Assignment }
+export type ASTAssignment = ASTNodeCommon & { kind: ASTNodeKind.Assignment }
 export function isAssignment(node: ASTNode): node is ASTAssignment {
   return node.kind === ASTNodeKind.Assignment
 }

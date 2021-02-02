@@ -17,6 +17,7 @@ export class Eve {
     }
   }
 
+
   static runOnce(program: Program, vm: VM): void {
     vm.driver.load(program)
     const run = vm.driver.runUntilHalt()

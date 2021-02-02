@@ -2,31 +2,40 @@
 import chalk from 'chalk'
 import repl from 'repl'
 import { EdenInterpreter } from '../eden/EdenInterpreter'
-import { Executor } from '../eve/vm/Executor'
-import { JSValue } from '../eve/vm/types'
+import { eveNull } from '../eve/vm/Constants'
+// import { Executor } from '../eve/vm/Executor'
+import { EveValue } from '../eve/vm/types'
 
-const debug = true
-Executor.debug = debug
+type ReplCallback = (err: Error | null, result: unknown) => void
+
 const prompt = chalk.white(`\n\n${chalk.greenBright('eden')} > `)
 const interpreter = new EdenInterpreter()
-interpreter.config = { debug }
 
-const interpretEden = (input: string, _ctx: any, _filename: any, cb: any) => {
-  const userCode = input.trim()
-  let result: JSValue = null
-  try {
-    result = interpreter.evaluate(userCode)
-    console.log(`  ${chalk.green('#')} => ${result}`)
-  } catch (err) {
-    console.error(chalk.red(err))
-    if (debug) {
-      console.trace(err)
-    }
+class EdenCLI {
+  static start(): void {
+    repl.start({
+      prompt,
+      eval: EdenCLI.interpretEden
+    })
   }
-  cb()
+
+  static interpretEden: repl.REPLEval = (
+    input: string,
+    _ctx: unknown,
+    _filename: unknown,
+    cb: ReplCallback
+  ) => {
+    const userCode = input.trim()
+    let eveResult: EveValue = eveNull
+    try { eveResult = interpreter.evaluate(userCode) } catch (err) {
+      console.error(chalk.red(err))
+      // if (debug) {
+      console.trace(err)
+      // }
+    }
+    const result = eveResult.js
+    cb(null, result)
+  }
 }
 
-repl.start({
-  prompt,
-  eval: interpretEden 
-})
+export { EdenCLI }

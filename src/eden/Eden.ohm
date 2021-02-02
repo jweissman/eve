@@ -4,7 +4,7 @@ Eden {
     | Nothing
 
   Expression
-    = SimpleExpression Nothing -- simple
+    = SimpleExpression // Nothing -- simple
     | CompoundExpression
     
   SimpleExpression

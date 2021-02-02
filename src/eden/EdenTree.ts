@@ -18,11 +18,13 @@ export class EdenTree extends SemanticOperation {
   Nothing = () => ({ kind: ASTNodeKind.Nothing })
   Identifier = (letters: Node) => ({
     kind: ASTNodeKind.Identifier,
-    name: String(letters.sourceString)
+    name: String(letters.sourceString),
+    children: []
   })
   IntegerLiteral = (digits: Node) => ({
     kind: ASTNodeKind.IntLit,
-    numericValue: Number(digits.sourceString)
+    numericValue: Number(digits.sourceString),
+    children: []
   })
   Addition: Action = (left: Node, op: Node, right: Node) =>
     binaryExpr(left, op, right)
@@ -38,5 +40,5 @@ export class EdenTree extends SemanticOperation {
   })
   CompoundExpression: Action = (list: Node) => ({ kind: 'program', children: list.asIteration().tree() })
   // CompoundExpression_one: Action = (single: Node, _nothing: Node) => single.tree()
-  Expression_simple: Action = (expr: Node, _nothing: Node) => expr.tree()
+  // Expression_simple: Action = (expr: Node, _nothing: Node) => expr.tree()
 }

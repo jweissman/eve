@@ -1,22 +1,16 @@
+import { assignment, binaryExpression, identifier, integerLiteral } from './ASTNode'
 import { BinaryOperator } from './BinaryOperator'
 import { EdenParser } from './EdenParser'
 
 const parser = new EdenParser()
 
-const verifyParseId = (input: string) => {
-  expect(parser.parse(input)).toEqual({ kind: 'identifier', name: input })
-}
+const expectParsesIdentifier = (input: string) =>
+  expect(parser.parse(input)).toEqual(identifier(input))
 
-const verifyParseArithmetic = (input: string, operator: BinaryOperator, left = 0, right = 1) => {
+const expectParsesArithmetic = (input: string, operator: BinaryOperator, left = 0, right = 1) =>
   expect(parser.parse(input)).toEqual(
-    {
-      kind: 'binaryExpression', operator: operator, children: [
-        { kind: 'integerLiteral', numericValue: left },
-        { kind: 'integerLiteral', numericValue: right }
-      ]
-    }
+    binaryExpression(operator, integerLiteral(left), integerLiteral(right))
   )
-}
 
 describe('parsing eden code', () => {
   xit('parses the empty program', () => {
@@ -26,7 +20,7 @@ describe('parsing eden code', () => {
   describe('integer arithmetic', () => {
     it('parses numbers', () => {
       ['0', '1', '2', '3', '10', '100', '1024'].forEach(value => {
-        expect(parser.parse(value)).toEqual({ kind: 'integerLiteral', numericValue: Number(value) })
+        expect(parser.parse(value)).toEqual(integerLiteral(Number(value)))
       })
     })
 
@@ -40,7 +34,7 @@ describe('parsing eden code', () => {
         '0**1': BinaryOperator.Power,
       }
       Object.entries(binaryOperatorCases).forEach(([test, op]) => {
-        verifyParseArithmetic(test, op) // BinaryOperator.Add)
+        expectParsesArithmetic(test, op) // BinaryOperator.Add)
       })
     })
 
@@ -55,16 +49,19 @@ describe('parsing eden code', () => {
             {
               kind: 'integerLiteral',
               numericValue: 1,
+              children: []
             },
             {
               kind: 'integerLiteral',
               numericValue: 2,
+              children: []
             },
           ],
         },
         {
           kind: 'integerLiteral',
           numericValue: 3,
+          children: []
         }],
       })
     })
@@ -74,22 +71,18 @@ describe('parsing eden code', () => {
     const singleLetterIds = ['a', 'b', 'c', 'd', 'e', 'x', 'y', 'z', '_']
     const multipleLetterIds = ['abacus', 'bacteria', 'cactus', 'xylophone', '_underbar']
     it('parses single-letter identifiers', () => {
-      singleLetterIds.forEach((identifier) => verifyParseId(identifier))
+      singleLetterIds.forEach((identifier) => expectParsesIdentifier(identifier))
     })
     it('parses multi-letter identifiers', () => {
-      multipleLetterIds.forEach((identifier) => verifyParseId(identifier))
+      multipleLetterIds.forEach((identifier) => expectParsesIdentifier(identifier))
     })
   })
 
   describe('assignment', () => {
     it('parses an assignment expression', () => {
-      expect(parser.parse('a = b')).toEqual({
-        kind: 'assignment',
-        children: [
-          { kind: 'identifier', name: 'a' }, 
-          { kind: 'identifier', name: 'b' }, 
-        ]
-      })
+      expect(parser.parse('a = b')).toEqual(
+        assignment(identifier('a'), identifier('b'))
+      )
     })
   })
 })
