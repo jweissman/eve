@@ -1,21 +1,17 @@
 Eden {
   Program
-    = Expression
-    | Nothing
+    = ExpressionList
+    // | Nothing
 
   Expression
-    = SimpleExpression // Nothing -- simple
-    | CompoundExpression
-    
-  SimpleExpression
     = AssignmentExpression
     | ArithmeticExpression
 
-  CompoundExpression
-    = NonemptyListOf<SimpleExpression, sep*>
+  ExpressionList
+    = ListOf<Expression, sep*>
   sep = ";" | "\n" | "\r"
 
-  AssignmentExpression = Identifier Equals SimpleExpression
+  AssignmentExpression = Identifier Equals Expression
   Equals = "="
 
   ArithmeticExpression = AdditiveExpression
@@ -41,7 +37,7 @@ Eden {
   PrimitiveExpression = ParentheticalExpression
                       | Atom
   
-  ParentheticalExpression = "(" SimpleExpression ")"
+  ParentheticalExpression = "(" Expression ")"
 
   Atom = IntegerLiteral
        | Identifier

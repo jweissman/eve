@@ -46,8 +46,14 @@ export function assignment(lhs: ASTNode, rhs: ASTNode): ASTAssignment {
   }
 }
 
+export type ASTExpressionList = ASTNodeCommon & { kind: ASTNodeKind.ExpressionList }
+export function isExpressionList(node: ASTNode): node is ASTExpressionList {
+  return node.kind === ASTNodeKind.ExpressionList
+}
+
 export type ASTNode = ASTNothing
   | ASTIdentifier
   | ASTIntegerLiteral
   | ASTBinaryExpression
   | ASTAssignment
+  | ASTExpressionList

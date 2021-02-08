@@ -1,5 +1,5 @@
 import { MatchResult } from 'ohm-js'
-import { ASTNode } from './ASTNode'
+import { ASTNode, isExpressionList } from './ASTNode'
 import { ASTNodeKind } from './ASTNodeKind'
 import { edenGrammar } from './EdenGrammar'
 import { edenSemantics } from './EdenSemantics'
@@ -18,6 +18,9 @@ export class EdenParser implements Parser {
     } else {
       const semantics = edenSemantics(match)
       const ast = semantics.tree()
+      if (isExpressionList(ast)) {
+        if (ast.children.length === 1) { return ast.children[0] }
+      }
       return ast
     }
   }

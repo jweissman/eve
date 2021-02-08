@@ -9,4 +9,6 @@ describe('eve vm driver', () => {
   })
 
   test.todo('optimizes gotos into jumps (static)')
+
+  // it()
 })

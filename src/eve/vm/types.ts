@@ -35,9 +35,11 @@ type VMKernel = { [key in Operation]: VMMethod }
 type Stack = EveValue[]
 type Register = { [key in RegistryKey]?: EveValue } 
 type ConstantPool = EveValue[]
+// type MethodPool = { programOffset: number }[]
 
 type VM = VMKernel & {
   constantPool: ConstantPool
+  // methodPool: MethodPool
   stack: Stack
   readonly driver: Driver
   readonly registry: Register

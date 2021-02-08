@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Eve } from '../eve/Eve'
-import { eveNull } from '../eve/vm/Constants'
+// import { eveNull } from '../eve/vm/Constants'
 import { EveValue, Instruction } from '../eve/vm/types'
 import { ASTNode } from './ASTNode'
 import { ASTNodeKind } from './ASTNodeKind'
@@ -19,17 +19,18 @@ export class EdenInterpreter implements Interpreter {
   eve = new Eve()
 
   evaluate(input: string): EveValue {
-    try {
-      const ast = this.parser.parse(input)
-      if (ast.kind === ASTNodeKind.Nothing) {
-        // console.error(ast.comment)
-        return eveNull
-      } 
-      const code = this.interpret(ast)
-      this.eve.vm.constantPool = this.engine.constants
-      return this.eve.execute(code)
-    } catch (err) { console.error(err) }
-    return eveNull
+    // try {
+    const ast = this.parser.parse(input)
+    if (ast.kind === ASTNodeKind.Nothing) {
+      console.error(ast.comment)
+      throw new Error(ast.comment)
+      // return eveNull
+    }
+    const code = this.interpret(ast)
+    this.eve.vm.constantPool = this.engine.constants
+    return this.eve.execute(code)
+    // } catch (err) { console.error(err) }
+    // return eveNull
   }
 
   private interpret(ast: ASTNode): Instruction[] {

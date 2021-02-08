@@ -18,10 +18,10 @@ describe('eden interpreter', () => {
   })
 
   describe('basics', () => {
-    it('empty program', () => {
+    xit('empty program', () => {
       expect(interpret('')).toEqual(null)
     })
-    xit('multiple lines', () => {
+    it('multiple lines', () => {
       expect(interpret('a=2;b=3;a+b')).toEqual(5)
     })
   })
@@ -70,7 +70,7 @@ describe('eden interpreter', () => {
     })
     
     describe('funcalls', () => {
-      it('calls a global function', () => {
+      xit('calls a global function', () => {
         expect(() => interpret('print(1+2)')).not.toThrow()
       })
     })

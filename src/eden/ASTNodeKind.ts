@@ -4,5 +4,5 @@ export enum ASTNodeKind {
   BinaryExpression = 'binaryExpression',
   Identifier = 'identifier',
   Assignment = 'assignment',
-  Program = 'program'
+  ExpressionList = 'expressionList',
 }

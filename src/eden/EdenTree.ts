@@ -38,7 +38,8 @@ export class EdenTree extends SemanticOperation {
     kind: ASTNodeKind.Assignment,
     children: [ left.tree(), right.tree() ]
   })
-  CompoundExpression: Action = (list: Node) => ({ kind: 'program', children: list.asIteration().tree() })
-  // CompoundExpression_one: Action = (single: Node, _nothing: Node) => single.tree()
-  // Expression_simple: Action = (expr: Node, _nothing: Node) => expr.tree()
+  ExpressionList: Action = (list: Node) => ({
+    kind: ASTNodeKind.ExpressionList,
+    children: list.asIteration().tree()
+  })
 }

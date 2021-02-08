@@ -14,7 +14,7 @@ export class EdenCodeEngine implements CodeEngine {
   public identifiers: { [key: string]: RegistryKey } = {}
 
   emptyProgram = () => [];
-  program = ({ children }: { children: ASTNode[]}) =>
+  expressionList = ({ children }: { children: ASTNode[]}) =>
     children.map(child => this.codegen(child)).flat()
 
   integerLiteral = (intLit: ASTNode) => {
