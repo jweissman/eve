@@ -1,9 +1,8 @@
-import { Program, Stack } from '../types'
+import { Instruction, Program, Stack } from '../types'
 import { FlightRecording } from './FlightRecording'
-
 export abstract class Driver {
+  abstract get code(): Instruction[];
   abstract get stack(): Stack;
-  abstract get currentProgramName(): string;
   abstract get instructionPointer(): number;
   abstract set instructionPointer(programOffset: number);
   abstract load(program: Program): void;

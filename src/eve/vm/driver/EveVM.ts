@@ -84,7 +84,8 @@ class EveVM extends ArithmeticLogicUnit implements VM {
   }
 
   throw = (): void => {
-    const generalExceptionMessage = `Threw at line ${this.driver.instructionPointer} in ${this.driver.currentProgramName}`
+    const generalExceptionMessage = `Threw at program offset ${this.driver.instructionPointer}`
+    console.log('At throw, driver code is: ' + JSON.stringify(this.driver.code))
     throw new Error(`EveException: ${generalExceptionMessage}`)
   }
 

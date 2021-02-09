@@ -76,12 +76,16 @@ describe(Eve, () => {
     expect(result.js).toEqual('hello there')
   })
 
-  it('throws an error', () => {
-    const executeThrow = () => eve.execute([ inst(Opcode.THROW) ])
-    expect(executeThrow).toThrow( 'EveException: Threw at line 0 in _program')
+  describe('throw', () => {
+    it('throws an exception', () => {
+      const executeThrow = () => eve.execute([inst(Opcode.THROW)])
+      expect(executeThrow).toThrow('EveException: Threw at program offset 0')
+    })
 
-    const executeThrowOnLineOne = () => eve.execute([ inst(Opcode.NOOP), inst(Opcode.THROW) ])
-    expect(executeThrowOnLineOne).toThrow( 'EveException: Threw at line 1 in _program')
+    it('reflects program counter', () => {
+      const throwAtSecondInstruction = () => eve.execute([inst(Opcode.NOOP), inst(Opcode.THROW)])
+      expect(throwAtSecondInstruction).toThrow('EveException: Threw at program offset 1')
+    })
   })
 
   it('illegal op', () => {

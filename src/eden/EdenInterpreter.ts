@@ -19,24 +19,18 @@ export class EdenInterpreter implements Interpreter {
   eve = new Eve()
 
   evaluate(input: string): EveValue {
-    // try {
     const ast = this.parser.parse(input)
     if (ast.kind === ASTNodeKind.Nothing) {
       console.error(ast.comment)
       throw new Error(ast.comment)
-      // return eveNull
     }
     const code = this.interpret(ast)
     this.eve.vm.constantPool = this.engine.constants
+    // this.eve.vm.compileMethods(this.engine.methods)
     return this.eve.execute(code)
-    // } catch (err) { console.error(err) }
-    // return eveNull
   }
 
   private interpret(ast: ASTNode): Instruction[] {
-    // const pretty = this.prettyPrinter[ast.kind](ast)
-    //     process.stdout.write(`     > ${pretty}
-    // `)
     const code = this.engine[ast.kind](ast)
     return code
   }

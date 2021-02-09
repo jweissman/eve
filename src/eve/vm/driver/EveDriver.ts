@@ -1,4 +1,4 @@
-import { VM, Program, Stack, EveValue, Instruction } from '../types'
+import { VM, Program, Stack, EveValue, Instruction, Frame } from '../types'
 import { Opcode } from '../Opcode'
 import { Executor } from '../Executor'
 import { Driver } from './Driver'
@@ -6,23 +6,18 @@ import { FlightRecording } from './FlightRecording'
 import { Timer } from './Timer'
 import { eveNull } from '../Constants'
 
-type Frame = { 
-  instructionPointer: number
-  stack: Stack
-}
-
 export class EveDriver extends Driver {
-  private programLibrary: { [key: string]: Program; } = { _main: [] };
-  currentProgramName = '';
-  frames: Frame[] = [{ instructionPointer: 0, stack: [] }]
-  get topFrame(): Frame { return this.frames[this.frames.length - 1] }
-
-  get instructionPointer(): number { return this.topFrame.instructionPointer }
-  set instructionPointer(value: number) { this.topFrame.instructionPointer = value }
-
-  get stack(): Stack { return this.topFrame.stack } 
+  private programData: Instruction[] = []
+  private frames: Frame[] = [{ instructionPointer: 0, stack: [] }]
 
   constructor(private vm: VM) { super() }
+
+  get code(): Instruction[] { return this.programData }
+  get topFrame(): Frame { return this.frames[this.frames.length - 1] }
+  get instructionPointer(): number { return this.topFrame.instructionPointer }
+  set instructionPointer(value: number) { this.topFrame.instructionPointer = value }
+  get stack(): Stack { return this.topFrame.stack } 
+
 
   pushStackFrame(frame: { programOffset: number }, arity: number): void {
     const args = []
@@ -42,19 +37,22 @@ export class EveDriver extends Driver {
     this.stack.push(retVal)
   }
 
-  load(program: Program, name = '_program'): void {
-    const optimized: Program = EveDriver.optimize(program)
-    this.programLibrary[name] = optimized
+  // okay, so the thought is to use load to get new code into the 'library' ...
+  load(program: Program): void {
+    // todo insert halt?
+    const optimized: Program = EveDriver.optimize(program, this.programData.length)
+    this.programData.push(...optimized)
+    // this.programLibrary[name] = optimized
   }
 
-  runUntilHalt(programName = '_program'): FlightRecording {
-    const program = this.programLibrary[programName]
-    if (!program) { throw new Error('no such program ' + programName) }
-    this.currentProgramName = programName
-    this.instructionPointer = 0
-    const flightPlan = () => this.followProgram(program)
+  runUntilHalt(): FlightRecording {
+    // const program = this.programLibrary[programName]
+    // if (!program) { throw new Error('no such program ' + programName) }
+    // this.currentProgramName = programName
+    // this.instructionPointer = 0
+    const flightPlan = () => this.followProgram()
     const [timeElapsed, instructionsPerformed] = Timer.measureMillis(flightPlan)
-    this.currentProgramName = ''
+    // this.currentProgramName = ''
     const recording: FlightRecording = {
       instructionsPerformed,
       timeElapsed
@@ -62,13 +60,13 @@ export class EveDriver extends Driver {
     return recording
   }
 
-  private followProgram(program: Program): number {
-    let nextInstruction = program[0]
+  private followProgram(): number {
+    let nextInstruction = this.code[this.instructionPointer]
     let stepCount = 0
     while (!this.vm.halted && nextInstruction) {
       this.runOneInstruction(nextInstruction)
       stepCount++
-      nextInstruction = program[this.instructionPointer]
+      nextInstruction = this.code[this.instructionPointer]
     }
     return stepCount
   }
@@ -82,20 +80,20 @@ export class EveDriver extends Driver {
     }
   }
 
-  static optimize = (program: Program): Program => program.map(instruction => {
+  static optimize = (program: Program, offset: number): Program => program.map(instruction => {
     const newInstruction = { ...instruction }
     if (instruction.opcode === Opcode.GOTO) {
       const targetInstruction = program.find((inst) => inst.label === instruction.targetLabel)
       if (targetInstruction) {
         newInstruction.opcode = Opcode.JUMP
-        newInstruction.operandOne = program.indexOf(targetInstruction)
+        newInstruction.operandOne = program.indexOf(targetInstruction) + offset
       } else {
         throw new Error('code optimize failed -- no such label ' + instruction.targetLabel)
       }
     } else if (instruction.opcode === Opcode.CALL) {
       const targetInstruction = program.find((inst) => inst.label === instruction.targetLabel)
       if (targetInstruction) {
-        newInstruction.operandOne = program.indexOf(targetInstruction)
+        newInstruction.operandOne = program.indexOf(targetInstruction) + offset
       } else {
         throw new Error('code optimize failed -- no such label ' + instruction.targetLabel)
       }

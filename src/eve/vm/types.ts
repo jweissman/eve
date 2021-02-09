@@ -23,12 +23,18 @@ type Instruction = {
 type Program = Instruction[];
 type JSValue = number | string | null
 type EveValue = EveNull | EveInteger | EveString
+
+type Frame = { 
+  instructionPointer: number
+  stack: Stack
+}
+
 type VMMethodArgs = Partial<{
   operandOne: number,
   operandTwo: number,
   targetLabel: string
 }>
-export type VMMethod = (instruction?: VMMethodArgs) => void 
+type VMMethod = (instruction?: VMMethodArgs) => void 
 
 type VMKernel = { [key in Operation]: VMMethod }
 
@@ -46,13 +52,15 @@ type VM = VMKernel & {
   readonly halted: boolean
   readonly top: EveValue
   readonly second: EveValue
+
+  // ()
 }
 
 export { 
-  VMMethodArgs,
-
+  VMMethod, VMMethodArgs,
   Instruction,
-  Stack, Register, ConstantPool,
+  Stack, Register, Frame,
+  ConstantPool,
   Program, JSValue,
   VM, EveValue
 }

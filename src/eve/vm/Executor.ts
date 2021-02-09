@@ -1,13 +1,11 @@
 import { Instruction, VM, VMMethod } from './types'
 import { instructionTable } from './InstructionTable'
-// import { prettyInstruction } from './prettyInstruction'
 export class Executor {
   static debug = false
   static perform(
     instruction: Instruction,
     virtualMachine: VM
   ): void {
-    // console.log(prettyInstruction(instruction))
     const vmMethodCall = this.lookupVirtualMachineMethod(
       instruction,
       virtualMachine
