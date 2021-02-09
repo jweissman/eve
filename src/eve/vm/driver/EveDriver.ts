@@ -18,7 +18,6 @@ export class EveDriver extends Driver {
   set instructionPointer(value: number) { this.topFrame.instructionPointer = value }
   get stack(): Stack { return this.topFrame.stack } 
 
-
   pushStackFrame(frame: { programOffset: number }, arity: number): void {
     const args = []
     for (let i = 0; i < arity; i++) {
@@ -37,22 +36,14 @@ export class EveDriver extends Driver {
     this.stack.push(retVal)
   }
 
-  // okay, so the thought is to use load to get new code into the 'library' ...
   load(program: Program): void {
-    // todo insert halt?
     const optimized: Program = EveDriver.optimize(program, this.programData.length)
     this.programData.push(...optimized)
-    // this.programLibrary[name] = optimized
   }
 
   runUntilHalt(): FlightRecording {
-    // const program = this.programLibrary[programName]
-    // if (!program) { throw new Error('no such program ' + programName) }
-    // this.currentProgramName = programName
-    // this.instructionPointer = 0
     const flightPlan = () => this.followProgram()
     const [timeElapsed, instructionsPerformed] = Timer.measureMillis(flightPlan)
-    // this.currentProgramName = ''
     const recording: FlightRecording = {
       instructionsPerformed,
       timeElapsed

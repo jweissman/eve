@@ -170,4 +170,18 @@ describe(Eve, () => {
     ])
     expect(result.js).toEqual(16)
   })
+
+  // call a method by reference...
+  xit('jumps to a method based on a reference', () => {
+    // eve.vm.constantPool = [ new EveFunctionReference('method', 0), new EveInteger(42) ]
+    // const result = eve.execute([
+    //   label('method'),
+    //   // inst(Opcode.PRT, { }),
+    //   inst(Opcode.LCONST_IDX, 1),
+    //   inst(Opcode.RET),
+    //   label('main'),
+    //   inst(Opcode.LCONST_IDX, 0),
+    //   inst(Opcode.CALL),
+    // ])
+  })
 })
