@@ -6,7 +6,7 @@ import { ASTNode } from './ASTNode'
 import { ASTNodeKind } from './ASTNodeKind'
 import { EdenCodeEngine } from './EdenCodeEngine'
 import { EdenParser } from './EdenParser'
-import { EdenTreeInspector } from './EdenTreeInspector'
+// import { EdenTreeInspector } from './EdenTreeInspector'
 import { Interpreter } from './Interpreter'
 import { Parser } from './Parser'
 import { CodeEngine } from './types'
@@ -15,7 +15,7 @@ export class EdenInterpreter implements Interpreter {
   // config = { debug: true }
   engine: CodeEngine = new EdenCodeEngine()
   parser: Parser = new EdenParser()
-  prettyPrinter: EdenTreeInspector = new EdenTreeInspector()
+  // prettyPrinter: EdenTreeInspector = new EdenTreeInspector()
   eve = new Eve()
 
   evaluate(input: string): EveValue {
