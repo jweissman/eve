@@ -10,6 +10,7 @@ export function opcodeForBinaryOperation(binaryOperator: BinaryOperator): Opcode
   case BinaryOperator.Divide: return Opcode.INT_DIV
   case BinaryOperator.Power: return Opcode.INT_POW
   case BinaryOperator.Modulus: return Opcode.INT_MOD
+  /* istanbul ignore next */
   default: assertNever(binaryOperator)
   }
 }

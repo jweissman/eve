@@ -13,8 +13,12 @@ const expectParsesArithmetic = (input: string, operator: BinaryOperator, left = 
   )
 
 describe('parsing eden code', () => {
-  xit('parses the empty program', () => {
-    expect(parser.parse('')).toEqual({ kind: 'emptyProgram' })
+  it('parses the empty program', () => {
+    expect(()=>parser.parse('')).not.toThrow()
+  })
+
+  it('parses an incomplete program', () => {
+    expect(()=>parser.parse('1+')).toThrow()
   })
 
   describe('integer arithmetic', () => {

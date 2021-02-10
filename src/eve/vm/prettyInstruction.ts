@@ -8,8 +8,8 @@ export function prettyInstruction(instruction: Instruction): string {
   if (instruction.operandOne !== undefined) {
     pretty += ' ' + chalk.gray(instruction.operandOne)
   }
-  if (instruction.label !== undefined) {
-    pretty += ' ' + chalk.gray(instruction.label)
-  }
+  // if (instruction.label !== undefined) {
+  //   pretty += ' ' + chalk.gray(instruction.label)
+  // }
   return pretty
 }

@@ -18,11 +18,8 @@ export class Executor {
 
   static lookupVirtualMachineMethod(instruction: Instruction, vm: VM): VMMethod {
     const instructionName = instructionTable[instruction.opcode]
-    if (!instructionName) {
-      throw new Error('[Executor] Instruction table does not have entry ' + instruction.opcode)
-    }
-    if (!vm[instructionName]) {
-      throw new Error('[Executor] Virtual machine does not implement ' + instructionName + ' (' + instruction.opcode + ')')
+    if (!instructionName || !vm[instructionName]) {
+      throw new Error('[Executor] Instruction table does not have entry for (or VM does not implement) opcode ' + instruction.opcode)
     }
     const vmMethodCall = vm[instructionName].bind(vm)
     return vmMethodCall

@@ -10,7 +10,7 @@ describe(EdenCodeEngine, () => {
 
   describe('error handling', () => {
     it('should throw on invalid instruction', () => {
-      const kinds = ['integerLiteral', 'identifier', 'assignment']
+      const kinds = ['integerLiteral', 'identifier', 'assignment', 'binaryExpression']
       kinds.forEach(nodeKind => {
         expect(() => engine[nodeKind]({} as ASTNode)).toThrow()
       })

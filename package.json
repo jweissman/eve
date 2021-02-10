@@ -29,5 +29,15 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "ohm-js": "^15.4.1"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": -1
+      }
+    }
   }
 }
